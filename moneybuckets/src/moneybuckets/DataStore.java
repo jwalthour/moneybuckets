@@ -21,6 +21,8 @@ public class DataStore {
 	// TODO: This should be both generalized and globalish, keeping in mind one transaction may go between buckets.
 	private List<Transaction> chaseTransactions = new LinkedList<>();
 	
+	OK, the big problem at the moment is that payments, fees, and sales are all run through the same filters
+	
 	public void LoadBucketsFromFile(String path) {
 		
 	}
@@ -29,7 +31,7 @@ public class DataStore {
 		Reader in = new FileReader(path);
 		Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
 		for (CSVRecord record : records) {
-			System.out.println(record);
+//			System.out.println(record);
 			String amt_str = record.get(record.size() - 1); // There's something not quite 
 			
 			double amt = Double.parseDouble(amt_str);
@@ -43,7 +45,7 @@ public class DataStore {
 		
 	}
 	
-	public void CategorizeTransactions(PaymentCategorizer cat) {
-		cat.CategorizeTransactions(chaseTransactions);
+	public List<Transaction> GetAllTransactions() {
+		return chaseTransactions;
 	}
 }

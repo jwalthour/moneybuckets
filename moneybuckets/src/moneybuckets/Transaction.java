@@ -25,6 +25,11 @@ public class Transaction {
 		category = "";
 	}
 	
+	@Override
+	public String toString() {
+		return "{ description: \"" + getDescription() + "\", amount: " + getAmount() + ", category: \"" + getCategory() + "\"}";
+	}
+	
 	// Trivial getters and setters
 	public Bucket getSourceBucket() { return sourceBucket; 	}
 	public void setSourceBucket(Bucket sourceBucket) { this.sourceBucket = sourceBucket; }

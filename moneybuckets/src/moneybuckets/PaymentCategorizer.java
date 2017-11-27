@@ -4,8 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -32,7 +35,7 @@ public class PaymentCategorizer {
 			case CONTAINS:
 				return query.contains(target);
 			case EQUALS:
-				return query.equals(target);
+				return query.equalsIgnoreCase(target);
 			case REGEX:
 				// TODO
 				return false;
@@ -66,8 +69,28 @@ public class PaymentCategorizer {
 			for (Rule r : rules) {
 				if(r.MeetsRule(tr.getDescription())) {
 					tr.setCategory(r.getCategory());
+//					System.out.println(tr.getDescription() + " matched rule " + r.getCategory());
+					break; // Don't process additional rules
 				}
 			}
 		}
+	}
+	
+	public HashMap<String, Double> GetOutboundTotalsForCategories(List<Transaction> transactions) {
+		HashMap<String, Double> totalForCat = new HashMap<String, Double>();
+//		System.out.println(transactions);
+		final String defaultCat = "unknown";
+		for (Transaction tr : transactions) {
+			String cat = tr.getCategory();
+			if(cat.equals("")) { cat = defaultCat; }
+			if(totalForCat.containsKey(cat)) {
+				// Not the first transaction
+				totalForCat.put(cat, totalForCat.get(cat) + tr.getAmount());
+			} else {
+				// Very first transaction
+				totalForCat.put(cat, tr.getAmount());
+			}
+		}
+		return totalForCat;
 	}
 }
