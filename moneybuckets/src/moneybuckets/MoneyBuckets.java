@@ -14,6 +14,7 @@ public class MoneyBuckets {
 		try {
 			// Load from CSV
 			chaseCard.loadStatement(args[0]);
+			chaseCard.loadCatRules("..\\configuration\\base_chase_rules.csv");
 			chaseCard.loadCatRules(args[1]);
 			
 			// Process

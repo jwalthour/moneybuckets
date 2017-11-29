@@ -1,0 +1,3 @@
+transType,target,type,category
+FEE,"INTEREST",CONTAINS,"Credit card interest"
+PAYMENT,"Payment",CONTAINS,"Credit card payment"
