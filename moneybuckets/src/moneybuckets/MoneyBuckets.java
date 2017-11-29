@@ -4,20 +4,21 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 
+import moneybuckets.buckets.ChaseCreditCardBucket;
+
 public class MoneyBuckets {
 
 	public static void main(String[] args) {
 		// Just for testing right now
-		DataStore ds = new DataStore();
-		PaymentCategorizer cat = new PaymentCategorizer();
+		ChaseCreditCardBucket chaseCard = new ChaseCreditCardBucket();
 		try {
 			// Load from CSV
-			ds.LoadChaseCreditCardStatement(args[0]);
-			cat.LoadCategorizationRules(args[1]);
+			chaseCard.loadStatement(args[0]);
+			chaseCard.loadCatRules(args[1]);
 			
 			// Process
-			cat.CategorizeTransactions(ds.GetAllTransactions());
-			HashMap<String, Double> totals = cat.GetOutboundTotalsForCategories(ds.GetAllTransactions());
+			chaseCard.categorizeTransactions();
+			HashMap<String, Double> totals = chaseCard.getOutboundTotalsForCategories();
 			
 			// Output
 			System.out.println(totals);

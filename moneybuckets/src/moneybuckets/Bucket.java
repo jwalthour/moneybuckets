@@ -19,5 +19,13 @@ public class Bucket {
 		informalName = informal_name;
 		isExternal = is_external;
 	}
-	
+
+	// Singleton one to represent general external entities
+	private static Bucket external = null;
+	public static Bucket getExternalBucket() {
+		if(external == null) {
+			external = new Bucket("External");
+		}
+		return external;
+	}
 }
