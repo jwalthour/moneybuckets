@@ -31,7 +31,7 @@ public class ChaseCreditCardBucket extends Bucket {
 			String amt_str = record.get(record.size() - 1); // There's something not quite 
 			ChaseCreditCardTransaction.TransactionType transType = TransactionType.SALE;
 			try {
-				transType = ChaseCreditCardTransaction.TransactionType.valueOf(record.get("Type"));
+				transType = ChaseCreditCardTransaction.TransactionType.valueOf(record.get("Type").toUpperCase());
 			} catch (IllegalArgumentException e) {
 				// do nothing
 			}
