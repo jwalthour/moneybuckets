@@ -23,6 +23,7 @@ public class MoneyBuckets {
 			
 			// Output
 			System.out.println(totals);
+			System.out.println(chaseCard.getUncategorizedTransactions());
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

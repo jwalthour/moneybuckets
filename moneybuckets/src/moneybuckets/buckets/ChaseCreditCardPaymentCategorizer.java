@@ -90,23 +90,4 @@ public class ChaseCreditCardPaymentCategorizer /*extends PaymentCategorizer*/ {
 			}
 		}
 	}
-	
-	public HashMap<String, Double> getOutboundTotalsForCategories(List<ChaseCreditCardTransaction> transactions) {
-		HashMap<String, Double> totalForCat = new HashMap<String, Double>();
-//		System.out.println(transactions);
-		final String defaultCat = "unknown";
-		for (ChaseCreditCardTransaction tr : transactions) {
-			String cat = tr.getCategory();
-			if(cat.equals("")) { cat = defaultCat; }
-			if(totalForCat.containsKey(cat)) {
-				// Not the first transaction
-				totalForCat.put(cat, totalForCat.get(cat) + tr.getAmount());
-			} else {
-				// Very first transaction
-				totalForCat.put(cat, tr.getAmount());
-			}
-		}
-		return totalForCat;
-	}
-
 }
