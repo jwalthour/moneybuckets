@@ -12,6 +12,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
 import moneybuckets.Bucket;
+import moneybuckets.PaymentCategorizer;
 import moneybuckets.Transaction;
 import moneybuckets.buckets.ChaseCreditCardTransaction.TransactionType;
 
@@ -56,13 +57,15 @@ public class ChaseCreditCardBucket extends Bucket {
 		
 		for (ChaseCreditCardTransaction tr : transactions) {
 			String cat = tr.getCategory();
-			if(cat.equalsIgnoreCase("")) { cat = DEFAULT_CAT; }
-			if(totalForCat.containsKey(cat)) {
-				// Not the first transaction
-				totalForCat.put(cat, totalForCat.get(cat) + tr.getAmount());
-			} else {
-				// Very first transaction
-				totalForCat.put(cat, tr.getAmount());
+			if(tr.getType() != TransactionType.PAYMENT) {
+				if(cat.equalsIgnoreCase("")) { cat = DEFAULT_CAT; }
+				if(totalForCat.containsKey(cat)) {
+					// Not the first transaction
+					totalForCat.put(cat, totalForCat.get(cat) + tr.getAmount());
+				} else {
+					// Very first transaction
+					totalForCat.put(cat, tr.getAmount());
+				}
 			}
 		}
 		return totalForCat;
