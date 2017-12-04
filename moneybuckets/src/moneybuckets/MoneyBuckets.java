@@ -2,6 +2,7 @@ package moneybuckets;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -12,17 +13,12 @@ import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import javax.swing.plaf.synth.SynthSeparatorUI;
 
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.labels.PieSectionLabelGenerator;
-import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
-import org.jfree.chart.plot.PiePlot;
-import org.jfree.data.general.DefaultPieDataset;
 
 import moneybuckets.buckets.ChaseCreditCardBucket;
+import moneybuckets.reports.SpendingCategoriesReport;
 
 public class MoneyBuckets {
 
@@ -43,14 +39,17 @@ public class MoneyBuckets {
 			System.out.println(totals);
 			System.out.println(chaseCard.getUncategorizedTransactions());
 			
-			SwingUtilities.invokeLater(() -> {
-				ChartShower example = new ChartShower("Expenses by category");
-				example.setChart(getPieChartForExpenseCategories(totals));
-			    example.setSize(800, 400);
-			    example.setLocationRelativeTo(null);
-			    example.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-			    example.setVisible(true);
-			  });
+			// Save
+			SpendingCategoriesReport.generateHtmlReport(totals, Paths.get("..", "generated_reports", "spending_report"));
+			
+//			SwingUtilities.invokeLater(() -> {
+//				ChartShower example = new ChartShower("Expenses by category");
+//				example.setChart(SpendingCategoriesReport.getPieChartForExpenseCategories(totals));
+//			    example.setSize(800, 400);
+//			    example.setLocationRelativeTo(null);
+//			    example.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//			    example.setVisible(true);
+//			  });
 
 			
 		} catch (FileNotFoundException e) {
@@ -75,22 +74,4 @@ public class MoneyBuckets {
 	}
 	
 	
-	public static JFreeChart getPieChartForExpenseCategories(List<Map.Entry<String, Double>> totals) {
-		DefaultPieDataset dataset= new DefaultPieDataset();
-		
-		for(Map.Entry<String, Double> pair : totals) {
-			dataset.setValue(pair.getKey(), -pair.getValue());
-		}
-		
-		JFreeChart chart = ChartFactory.createPieChart(
-		        "Expenses by category",
-		        dataset,
-		        false, 
-		        true,
-		        false);
-		PieSectionLabelGenerator labelGenerator = new StandardPieSectionLabelGenerator(
-				"Category {0} : {1}", new DecimalFormat("$0.00"), new DecimalFormat("0%"));
-		((PiePlot) chart.getPlot()).setLabelGenerator(labelGenerator);
-	    return chart;
-	}
 }

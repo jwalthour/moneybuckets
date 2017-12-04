@@ -1,3 +1,4 @@
 .metadata/
 .recommenders/
 exported_statements/*
+generated_reports/*
