@@ -11,6 +11,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,23 +45,8 @@ public class SpendingCategoriesReport {
 	 * @param reportSavePath - base folder to which to save report.  Will contain report.html and one or more PNG files after running.
 	 * @throws IOException - thrown when file can't be written
 	 */
-	public static void generateHtmlReport(List<Map.Entry<String, Double>> totals, Path reportSavePath) throws IOException {
-		// Make sure folder exists
-		new File(reportSavePath.toString()).mkdirs();
-		
-		// TODO: Copy in CSS file
-		
-		// Save off a PNG of the main pie chart
-		FileOutputStream pieChartFile = new FileOutputStream(reportSavePath.resolve(CATEGORIES_PIE_CHART_FILE).toFile());
-		JFreeChart mainPieChart = getPieChartForExpenseCategories(totals);
-		ChartUtilities.writeChartAsPNG(pieChartFile, mainPieChart, CATEGORIES_PIE_CHART_WIDTH_PX, CATEGORIES_PIE_CHART_HEIGHT_PX);
-		
-		// Open top-level HTML file
-		FileOutputStream htmlFile = new FileOutputStream(reportSavePath.resolve(BASE_REPORT_NAME).toFile());
-		writeHtml(htmlFile);
-	}
 	
-	public static void generateHtmlReport(List<Transaction> categorizedTransactions, HashMap<String, Double> catTotals, Path reportSavePath) throws IOException {
+	public static void generateHtmlReport(List<Transaction> categorizedTransactions, HashMap<String, Double> catTotals, Path reportSavePath, Date timeRangeStart, Date timeRangeEnd) throws IOException {
 		// Make sure folder exists
 		new File(reportSavePath.toString()).mkdirs();
 		
@@ -76,22 +62,26 @@ public class SpendingCategoriesReport {
 		
 		// Open top-level HTML file
 		FileOutputStream htmlFile = new FileOutputStream(reportSavePath.resolve(BASE_REPORT_NAME).toFile());
-		writeHtml(htmlFile, categorizedTransactions);
+		writeHtml(htmlFile, categorizedTransactions, timeRangeStart, timeRangeEnd);
 	}
 	
 
-	private static void writeHtml(FileOutputStream htmlFile, List<Transaction> categorizedTransactions) throws IOException {
+	private static void writeHtml(FileOutputStream htmlFile, List<Transaction> categorizedTransactions, Date timeRangeStart, Date timeRangeEnd) throws IOException {
 		// I'm aware Java has HTML templating libraries.  I feel they are entirely too heavy for this use case, since they're meant for server-side use.
 		String header = "<html><head><style>body { font-family: Arial; }</style></head><body>";
 		htmlFile.write(header.getBytes());
 		
-		htmlFile.write("<h1>Spending by category</h1>".getBytes());
+		String title = "<h1>Spending Report - " +
+				DATE_FORMAT.format(timeRangeStart) + " to " +
+				DATE_FORMAT.format(timeRangeEnd) + "</h1>";
+		htmlFile.write(title.getBytes());
 		
+		htmlFile.write("<h2>Summary</h2>".getBytes());
 		String pieChartHolder = "<p><img src=\"" + CATEGORIES_PIE_CHART_FILE + "\" width=" + CATEGORIES_PIE_CHART_WIDTH_PX + " height=" + CATEGORIES_PIE_CHART_HEIGHT_PX +" /></p>";
 		htmlFile.write(pieChartHolder.getBytes());
 		
 		// Table of transactions
-		htmlFile.write("<h1>Payments made</h1>".getBytes());
+		htmlFile.write("<h2>Individual purchases</h2>".getBytes());
 		htmlFile.write("<table>".getBytes());
 		for (Transaction transaction : categorizedTransactions) {
 			htmlFile.write("<tr><td>".getBytes());
@@ -111,25 +101,6 @@ public class SpendingCategoriesReport {
 		
 	}
 
-	private static void writeHtml(FileOutputStream htmlFile) throws IOException {
-		// I'm aware Java has HTML templating libraries.  I feel they are entirely too heavy for this use case, since they're meant for server-side use.
-		String header = "<html><head><style>body { font-family: Arial; }</style></head><body>";
-		htmlFile.write(header.getBytes());
-		
-		htmlFile.write("<h1>Spending by category</h1>".getBytes());
-		
-		String pieChartHolder = "<p><img src=\"" + CATEGORIES_PIE_CHART_FILE + "\" width=" + CATEGORIES_PIE_CHART_WIDTH_PX + " height=" + CATEGORIES_PIE_CHART_HEIGHT_PX +" /></p>";
-		htmlFile.write(pieChartHolder.getBytes());
-		
-		// TODO: Table?
-		
-		// TODO: unknowns
-		
-		String footer = "</body></html>";
-		htmlFile.write(footer.getBytes());
-		
-	}
-	
 	public static JFreeChart getPieChartForExpenseCategories(HashMap<String, Double> totals) {
 		List<Map.Entry<String, Double>> list = new LinkedList<>(totals.entrySet());
 		list.sort(new Comparator<Map.Entry<String, Double>>() {
