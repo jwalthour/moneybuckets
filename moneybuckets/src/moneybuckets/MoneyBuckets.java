@@ -3,11 +3,16 @@ package moneybuckets;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.plaf.synth.SynthSeparatorUI;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -70,10 +75,28 @@ public class MoneyBuckets {
 	}
 	
 	public static JFreeChart getPieChartForExpenseCategories(HashMap<String, Double> totals) {
+		List<Map.Entry<String, Double>> list = new LinkedList<>(totals.entrySet());
+		list.sort(new Comparator<Map.Entry<String, Double>>() {
+
+			@Override
+			public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+		       if (o1.getValue() > o2.getValue()) {
+		           return 1;
+		       } else if (o1.getValue() < o2.getValue()){
+		           return -1;
+		       } else {
+		           return 0;
+		       }
+			}
+		});
+		
+		return getPieChartForExpenseCategories(list);
+	}
+	public static JFreeChart getPieChartForExpenseCategories(List<Map.Entry<String, Double>> totals) {
 		DefaultPieDataset dataset= new DefaultPieDataset();
 		
-		for(String cat : totals.keySet()) {
-			dataset.setValue(cat, -totals.get(cat));
+		for(Map.Entry<String, Double> pair : totals) {
+			dataset.setValue(pair.getKey(), -pair.getValue());
 		}
 		
 		JFreeChart chart = ChartFactory.createPieChart(
