@@ -2,6 +2,7 @@ package moneybuckets;
 
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,6 +63,30 @@ public class Transaction {
 				// Second sort criteria: category name
 				if(!o1.getCategory().equals(o2.getCategory())) {
 					return o1.getCategory().compareTo(o2.getCategory());
+				} else {
+					// Third sort criteria: transaction amount
+					return ((Double)o1.getAmount()).compareTo(o2.getAmount());
+				}
+			}
+		}
+	}
+	public static class ComparatorUncatCatByTotalDescAmount implements Comparator<Transaction> {
+		private HashMap<String, Double> catTotals;
+		public ComparatorUncatCatByTotalDescAmount(HashMap<String, Double> catTotals) {
+			this.catTotals = catTotals;
+		}
+		@Override
+		public int compare(Transaction o1, Transaction o2) {
+			// First sort criteria: Uncategorized first
+			if        ( o1.getCategory().equals(UNCATEGORIZED) && !o2.getCategory().equals(UNCATEGORIZED)) {
+				return -1;
+			} else if (!o1.getCategory().equals(UNCATEGORIZED) &&  o2.getCategory().equals(UNCATEGORIZED)) {
+				return 1;
+			} else {
+				// Second sort criteria: category amount
+				if(!o1.getCategory().equals(o2.getCategory()) && !o1.getCategory().equals(UNCATEGORIZED)
+						&& catTotals.containsKey(o1.getCategory()) && catTotals.containsKey(o2.getCategory())) {
+					return ((Double)catTotals.get(o1.getCategory())).compareTo(catTotals.get(o2.getCategory()));
 				} else {
 					// Third sort criteria: transaction amount
 					return ((Double)o1.getAmount()).compareTo(o2.getAmount());

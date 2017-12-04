@@ -56,7 +56,7 @@ public class SpendingCategoriesReport {
 		writeHtml(htmlFile);
 	}
 	
-	public static void generateHtmlReport(List<Transaction> categorizedTransactions, HashMap<String, Double> cat_totals, Path reportSavePath) throws IOException {
+	public static void generateHtmlReport(List<Transaction> categorizedTransactions, HashMap<String, Double> catTotals, Path reportSavePath) throws IOException {
 		// Make sure folder exists
 		new File(reportSavePath.toString()).mkdirs();
 		
@@ -64,11 +64,11 @@ public class SpendingCategoriesReport {
 		
 		// Save off a PNG of the main pie chart
 		FileOutputStream pieChartFile = new FileOutputStream(reportSavePath.resolve(CATEGORIES_PIE_CHART_FILE).toFile());
-		JFreeChart mainPieChart = getPieChartForExpenseCategories(cat_totals);
+		JFreeChart mainPieChart = getPieChartForExpenseCategories(catTotals);
 		ChartUtilities.writeChartAsPNG(pieChartFile, mainPieChart, CATEGORIES_PIE_CHART_WIDTH_PX, CATEGORIES_PIE_CHART_HEIGHT_PX);
 		
 		// Sort transactions
-		categorizedTransactions.sort(new Transaction.ComparatorUncatCatDescAmount());
+		categorizedTransactions.sort(new Transaction.ComparatorUncatCatByTotalDescAmount(catTotals));
 		
 		// Open top-level HTML file
 		FileOutputStream htmlFile = new FileOutputStream(reportSavePath.resolve(BASE_REPORT_NAME).toFile());
