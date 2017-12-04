@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +22,8 @@ import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.util.Rotation;
+
+import moneybuckets.Transaction;
 
 public class SpendingCategoriesReport {
 	private static final String BASE_REPORT_NAME = "report.html";
@@ -48,6 +53,23 @@ public class SpendingCategoriesReport {
 		writeHtml(htmlFile);
 	}
 	
+	public static void generateHtmlReport(List<Transaction> categorizedTransactions, HashMap<String, Double> cat_totals, Path reportSavePath) throws IOException {
+		// Make sure folder exists
+		new File(reportSavePath.toString()).mkdirs();
+		
+		// TODO: Copy in a CSS file
+		
+		// Save off a PNG of the main pie chart
+		FileOutputStream pieChartFile = new FileOutputStream(reportSavePath.resolve(CATEGORIES_PIE_CHART_FILE).toFile());
+		JFreeChart mainPieChart = getPieChartForExpenseCategories(cat_totals);
+		ChartUtilities.writeChartAsPNG(pieChartFile, mainPieChart, CATEGORIES_PIE_CHART_WIDTH_PX, CATEGORIES_PIE_CHART_HEIGHT_PX);
+		
+		// Open top-level HTML file
+		FileOutputStream htmlFile = new FileOutputStream(reportSavePath.resolve(BASE_REPORT_NAME).toFile());
+		writeHtml(htmlFile);
+	}
+	
+	
 	private static void writeHtml(FileOutputStream htmlFile) throws IOException {
 		// I'm aware Java has HTML templating libraries.  I feel they are entirely too heavy for this use case, since they're meant for server-side use.
 		String header = "<html><head><style>body { font-family: Arial; }</style></head><body>";
@@ -65,6 +87,25 @@ public class SpendingCategoriesReport {
 		String footer = "</body></html>";
 		htmlFile.write(footer.getBytes());
 		
+	}
+	
+	public static JFreeChart getPieChartForExpenseCategories(HashMap<String, Double> totals) {
+		List<Map.Entry<String, Double>> list = new LinkedList<>(totals.entrySet());
+		list.sort(new Comparator<Map.Entry<String, Double>>() {
+
+			@Override
+			public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+		       if (o1.getValue() > o2.getValue()) {
+		           return 1;
+		       } else if (o1.getValue() < o2.getValue()){
+		           return -1;
+		       } else {
+		           return 0;
+		       }
+			}
+		});
+		
+		return getPieChartForExpenseCategories(list);
 	}
 	
 	public static JFreeChart getPieChartForExpenseCategories(List<Map.Entry<String, Double>> totals) {

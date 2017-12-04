@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.commons.csv.*;
 
+import moneybuckets.Transaction;
 import moneybuckets.buckets.ChaseCreditCardTransaction.*;
 
 public class ChaseCreditCardPaymentCategorizer /*extends PaymentCategorizer*/ {
@@ -78,12 +79,16 @@ public class ChaseCreditCardPaymentCategorizer /*extends PaymentCategorizer*/ {
 		}
 	}
 
-
-	public void categorizeTransactions(List<ChaseCreditCardTransaction> transactions) {
-		for (ChaseCreditCardTransaction tr : transactions) {
+	/**
+	 * 
+	 * @param transactions - MUST be a list of ChaseCreditCardTransactions
+	 */
+	public void categorizeTransactions(List<Transaction> transactions) {
+		for (Transaction tr : transactions) {
+			ChaseCreditCardTransaction ctr = (ChaseCreditCardTransaction)tr;
 			for (Rule r : rules) {
-				if(r.MeetsRule(tr.getType(), tr.getDescription())) {
-					tr.setCategory(r.getCategory());
+				if(r.MeetsRule(ctr.getType(), ctr.getDescription())) {
+					ctr.setCategory(r.getCategory());
 //					System.out.println(tr.getDescription() + " matched rule " + r.getCategory());
 					break; // Don't process additional rules
 				}

@@ -19,7 +19,7 @@ import moneybuckets.Transaction;
 import moneybuckets.buckets.ChaseCreditCardTransaction.TransactionType;
 
 public class ChaseCreditCardBucket extends Bucket {
-	private List<ChaseCreditCardTransaction> transactions = new LinkedList<>();
+	private List<Transaction> transactions = new LinkedList<>();
 	private ChaseCreditCardPaymentCategorizer cat = new ChaseCreditCardPaymentCategorizer();
 	public ChaseCreditCardBucket() {
 		super("Chase Credit Card", false);
@@ -52,6 +52,10 @@ public class ChaseCreditCardBucket extends Bucket {
 		cat.categorizeTransactions(transactions);
 	}
 	
+	public List<Transaction> getTransactions() {
+		return (List<Transaction>)transactions;
+	}
+		
 	public List<Map.Entry<String, Double>>  getSortedListOfCategoriesAndTotals() {
 		HashMap<String, Double> totalForCat = getOutboundTotalsForCategories();
 		List<Map.Entry<String, Double>> list = new LinkedList<>(totalForCat.entrySet());
@@ -75,25 +79,26 @@ public class ChaseCreditCardBucket extends Bucket {
 		HashMap<String, Double> totalForCat = new HashMap<String, Double>();
 //		System.out.println(transactions);
 		
-		for (ChaseCreditCardTransaction tr : transactions) {
-			String cat = tr.getCategory();
-			if(tr.getType() != TransactionType.PAYMENT) {
+		for (Transaction tr : transactions) {
+			ChaseCreditCardTransaction ctr = (ChaseCreditCardTransaction)tr;
+			String cat = ctr.getCategory();
+			if(ctr.getType() != TransactionType.PAYMENT) {
 				if(totalForCat.containsKey(cat)) {
 					// Not the first transaction
-					totalForCat.put(cat, totalForCat.get(cat) + tr.getAmount());
+					totalForCat.put(cat, totalForCat.get(cat) + ctr.getAmount());
 				} else {
 					// Very first transaction
-					totalForCat.put(cat, tr.getAmount());
+					totalForCat.put(cat, ctr.getAmount());
 				}
 			}
 		}
 		return totalForCat;
 	}
 	
-	public List<ChaseCreditCardTransaction> getUncategorizedTransactions() {
-		List<ChaseCreditCardTransaction> uncat = new LinkedList<>();
+	public List<Transaction> getUncategorizedTransactions() {
+		List<Transaction> uncat = new LinkedList<>();
 		
-		for (ChaseCreditCardTransaction tr : transactions) {
+		for (Transaction tr : transactions) {
 			if(tr.getCategory().equalsIgnoreCase(Transaction.UNCATEGORIZED)) {
 				uncat.add(tr);
 			}

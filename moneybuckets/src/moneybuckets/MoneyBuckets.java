@@ -40,7 +40,9 @@ public class MoneyBuckets {
 			System.out.println(chaseCard.getUncategorizedTransactions());
 			
 			// Save
-			SpendingCategoriesReport.generateHtmlReport(totals, Paths.get("..", "generated_reports", "spending_report"));
+			SpendingCategoriesReport.generateHtmlReport(chaseCard.getTransactions(),
+					chaseCard.getOutboundTotalsForCategories(), 
+					Paths.get("..", "generated_reports", "spending_report"));
 			
 //			SwingUtilities.invokeLater(() -> {
 //				ChartShower example = new ChartShower("Expenses by category");
