@@ -37,7 +37,7 @@ public class MoneyBuckets {
 			
 			// Process
 			chaseCard.categorizeTransactions();
-			HashMap<String, Double> totals = chaseCard.getOutboundTotalsForCategories();
+			List<Map.Entry<String, Double>> totals = chaseCard.getSortedListOfCategoriesAndTotals();
 			
 			// Output
 			System.out.println(totals);
@@ -74,24 +74,7 @@ public class MoneyBuckets {
 		}
 	}
 	
-	public static JFreeChart getPieChartForExpenseCategories(HashMap<String, Double> totals) {
-		List<Map.Entry<String, Double>> list = new LinkedList<>(totals.entrySet());
-		list.sort(new Comparator<Map.Entry<String, Double>>() {
-
-			@Override
-			public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
-		       if (o1.getValue() > o2.getValue()) {
-		           return 1;
-		       } else if (o1.getValue() < o2.getValue()){
-		           return -1;
-		       } else {
-		           return 0;
-		       }
-			}
-		});
-		
-		return getPieChartForExpenseCategories(list);
-	}
+	
 	public static JFreeChart getPieChartForExpenseCategories(List<Map.Entry<String, Double>> totals) {
 		DefaultPieDataset dataset= new DefaultPieDataset();
 		
