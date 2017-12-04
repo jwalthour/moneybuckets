@@ -4,10 +4,15 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.csv.CSVFormat;
@@ -19,6 +24,8 @@ import moneybuckets.Transaction;
 import moneybuckets.buckets.ChaseCreditCardTransaction.TransactionType;
 
 public class ChaseCreditCardBucket extends Bucket {
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+	
 	private List<Transaction> transactions = new LinkedList<>();
 	private ChaseCreditCardPaymentCategorizer cat = new ChaseCreditCardPaymentCategorizer();
 	public ChaseCreditCardBucket() {
@@ -30,7 +37,7 @@ public class ChaseCreditCardBucket extends Bucket {
 		Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
 		for (CSVRecord record : records) {
 //			System.out.println(record);
-			String amt_str = record.get(record.size() - 1); // There's something not quite 
+			String amt_str = record.get(record.size() - 1); // For some reason the description is sometimes several columns.  I think that's due to commas in descriptions.  But the amount is always the last column.
 			ChaseCreditCardTransaction.TransactionType transType = TransactionType.SALE;
 			try {
 				transType = ChaseCreditCardTransaction.TransactionType.valueOf(record.get("Type").toUpperCase());
@@ -38,8 +45,13 @@ public class ChaseCreditCardBucket extends Bucket {
 				// do nothing
 			}
 			double amt = Double.parseDouble(amt_str);
-			// TODO: parse date
-			ChaseCreditCardTransaction tr = new ChaseCreditCardTransaction(this, Bucket.getExternalBucket(), record.get("Description"), amt, null, transType);
+			Date date = null;
+			try {
+				date = DATE_FORMAT.parse(record.get(1));
+			} catch (ParseException e) {
+				// do nothing
+			}
+			ChaseCreditCardTransaction tr = new ChaseCreditCardTransaction(this, Bucket.getExternalBucket(), record.get("Description"), amt, date, transType);
 			transactions.add(tr);
 		}
 	}

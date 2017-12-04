@@ -7,11 +7,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.jfree.chart.ChartFactory;
@@ -32,6 +35,7 @@ public class SpendingCategoriesReport {
 	private static final int CATEGORIES_PIE_CHART_WIDTH_PX  = 800;
 	private static final int CATEGORIES_PIE_CHART_HEIGHT_PX = 400;
 	private static final DecimalFormat CURRENCY_FORMATTER = new DecimalFormat("$0.00");
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
 	
 	/**
@@ -91,11 +95,11 @@ public class SpendingCategoriesReport {
 		htmlFile.write("<table>".getBytes());
 		for (Transaction transaction : categorizedTransactions) {
 			htmlFile.write("<tr><td>".getBytes());
-			htmlFile.write("DATE".getBytes());
-			htmlFile.write("</td><td>".getBytes());
-			htmlFile.write(CURRENCY_FORMATTER.format(transaction.getAmount()).getBytes());
+			htmlFile.write(DATE_FORMAT.format(transaction.getTimestamp()).getBytes());
 			htmlFile.write("</td><td>".getBytes());
 			htmlFile.write(transaction.getDescription().getBytes());
+			htmlFile.write("</td><td>".getBytes());
+			htmlFile.write(CURRENCY_FORMATTER.format(transaction.getAmount()).getBytes());
 			htmlFile.write("</td><td>".getBytes());
 			htmlFile.write(transaction.getCategory().getBytes());
 			htmlFile.write("</td></tr>".getBytes());
