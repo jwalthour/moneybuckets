@@ -21,7 +21,6 @@ import moneybuckets.buckets.ChaseCreditCardTransaction.TransactionType;
 public class ChaseCreditCardBucket extends Bucket {
 	private List<ChaseCreditCardTransaction> transactions = new LinkedList<>();
 	private ChaseCreditCardPaymentCategorizer cat = new ChaseCreditCardPaymentCategorizer();
-	static final String DEFAULT_CAT = "unknown";
 	public ChaseCreditCardBucket() {
 		super("Chase Credit Card", false);
 	}
@@ -79,7 +78,6 @@ public class ChaseCreditCardBucket extends Bucket {
 		for (ChaseCreditCardTransaction tr : transactions) {
 			String cat = tr.getCategory();
 			if(tr.getType() != TransactionType.PAYMENT) {
-				if(cat.equalsIgnoreCase("")) { cat = DEFAULT_CAT; }
 				if(totalForCat.containsKey(cat)) {
 					// Not the first transaction
 					totalForCat.put(cat, totalForCat.get(cat) + tr.getAmount());
@@ -96,7 +94,7 @@ public class ChaseCreditCardBucket extends Bucket {
 		List<ChaseCreditCardTransaction> uncat = new LinkedList<>();
 		
 		for (ChaseCreditCardTransaction tr : transactions) {
-			if(tr.getCategory().equalsIgnoreCase("") || tr.getCategory().equalsIgnoreCase(DEFAULT_CAT)) {
+			if(tr.getCategory().equalsIgnoreCase(Transaction.UNCATEGORIZED)) {
 				uncat.add(tr);
 			}
 		}		

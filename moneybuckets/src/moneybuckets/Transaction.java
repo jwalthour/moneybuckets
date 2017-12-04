@@ -12,6 +12,8 @@ public class Transaction {
 	private String category;
 	private List<String> tags = new LinkedList<>();
 	
+	public static final String UNCATEGORIZED = "Uncategorized"; 
+	
 	public Transaction() {
 		this(null, null, "", 0, null);
 	}
@@ -22,7 +24,7 @@ public class Transaction {
 		setDescription(desc);
 		amount = amt;
 		timestamp = ts;
-		category = "";
+		category = UNCATEGORIZED;
 	}
 	
 	@Override

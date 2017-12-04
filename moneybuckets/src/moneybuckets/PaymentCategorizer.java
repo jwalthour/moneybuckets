@@ -82,7 +82,7 @@ public class PaymentCategorizer {
 		final String defaultCat = "unknown";
 		for (Transaction tr : transactions) {
 			String cat = tr.getCategory();
-			if(cat.equals("")) { cat = defaultCat; }
+			if(cat == null) { cat = defaultCat; }
 			if(totalForCat.containsKey(cat)) {
 				// Not the first transaction
 				totalForCat.put(cat, totalForCat.get(cat) + tr.getAmount());
