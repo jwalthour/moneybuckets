@@ -31,6 +31,9 @@ public class SpendingCategoriesReport {
 	private static final String CATEGORIES_PIE_CHART_FILE = "cat_pie.png";
 	private static final int CATEGORIES_PIE_CHART_WIDTH_PX  = 800;
 	private static final int CATEGORIES_PIE_CHART_HEIGHT_PX = 400;
+	private static final DecimalFormat CURRENCY_FORMATTER = new DecimalFormat("$0.00");
+
+	
 	/**
 	 * 
 	 * @param totals - a sorted list of category strings and totals for each category
@@ -64,12 +67,46 @@ public class SpendingCategoriesReport {
 		JFreeChart mainPieChart = getPieChartForExpenseCategories(cat_totals);
 		ChartUtilities.writeChartAsPNG(pieChartFile, mainPieChart, CATEGORIES_PIE_CHART_WIDTH_PX, CATEGORIES_PIE_CHART_HEIGHT_PX);
 		
+		// Sort transactions
+		categorizedTransactions.sort(new Transaction.ComparatorUncatCatDescAmount());
+		
 		// Open top-level HTML file
 		FileOutputStream htmlFile = new FileOutputStream(reportSavePath.resolve(BASE_REPORT_NAME).toFile());
-		writeHtml(htmlFile);
+		writeHtml(htmlFile, categorizedTransactions);
 	}
 	
-	
+
+	private static void writeHtml(FileOutputStream htmlFile, List<Transaction> categorizedTransactions) throws IOException {
+		// I'm aware Java has HTML templating libraries.  I feel they are entirely too heavy for this use case, since they're meant for server-side use.
+		String header = "<html><head><style>body { font-family: Arial; }</style></head><body>";
+		htmlFile.write(header.getBytes());
+		
+		htmlFile.write("<h1>Spending by category</h1>".getBytes());
+		
+		String pieChartHolder = "<p><img src=\"" + CATEGORIES_PIE_CHART_FILE + "\" width=" + CATEGORIES_PIE_CHART_WIDTH_PX + " height=" + CATEGORIES_PIE_CHART_HEIGHT_PX +" /></p>";
+		htmlFile.write(pieChartHolder.getBytes());
+		
+		// Table of transactions
+		htmlFile.write("<h1>Payments made</h1>".getBytes());
+		htmlFile.write("<table>".getBytes());
+		for (Transaction transaction : categorizedTransactions) {
+			htmlFile.write("<tr><td>".getBytes());
+			htmlFile.write("DATE".getBytes());
+			htmlFile.write("</td><td>".getBytes());
+			htmlFile.write(CURRENCY_FORMATTER.format(transaction.getAmount()).getBytes());
+			htmlFile.write("</td><td>".getBytes());
+			htmlFile.write(transaction.getDescription().getBytes());
+			htmlFile.write("</td><td>".getBytes());
+			htmlFile.write(transaction.getCategory().getBytes());
+			htmlFile.write("</td></tr>".getBytes());
+		}
+		htmlFile.write("</table>".getBytes());
+		
+		String footer = "</body></html>";
+		htmlFile.write(footer.getBytes());
+		
+	}
+
 	private static void writeHtml(FileOutputStream htmlFile) throws IOException {
 		// I'm aware Java has HTML templating libraries.  I feel they are entirely too heavy for this use case, since they're meant for server-side use.
 		String header = "<html><head><style>body { font-family: Arial; }</style></head><body>";
@@ -122,7 +159,7 @@ public class SpendingCategoriesReport {
 		        true,
 		        false);
 		PieSectionLabelGenerator labelGenerator = new StandardPieSectionLabelGenerator(
-				"Category {0} : {1}", new DecimalFormat("$0.00"), new DecimalFormat("0%"));
+				"Category {0} : {1}", CURRENCY_FORMATTER, new DecimalFormat("0%"));
 		((PiePlot) chart.getPlot()).setLabelGenerator(labelGenerator);
 		((PiePlot)chart.getPlot()).setDirection(Rotation.ANTICLOCKWISE);
 		((PiePlot)chart.getPlot()).setBackgroundPaint(new Color(255,255,255));

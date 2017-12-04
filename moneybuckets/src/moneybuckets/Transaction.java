@@ -50,14 +50,14 @@ public class Transaction {
 	public void addTag(String tag) { tags.add(tag); }
 	public boolean hasTag(String tag) { return tags.contains(tag); }
 	
-	public class ComparatorUncatCatDescAmount implements Comparator<Transaction> {
+	public static class ComparatorUncatCatDescAmount implements Comparator<Transaction> {
 		@Override
 		public int compare(Transaction o1, Transaction o2) {
 			// First sort criteria: Uncategorized first
 			if        ( o1.getCategory().equals(UNCATEGORIZED) && !o2.getCategory().equals(UNCATEGORIZED)) {
-				return 1;
-			} else if (!o1.getCategory().equals(UNCATEGORIZED) &&  o2.getCategory().equals(UNCATEGORIZED)) {
 				return -1;
+			} else if (!o1.getCategory().equals(UNCATEGORIZED) &&  o2.getCategory().equals(UNCATEGORIZED)) {
+				return 1;
 			} else {
 				// Second sort criteria: category name
 				if(!o1.getCategory().equals(o2.getCategory())) {
