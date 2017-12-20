@@ -36,7 +36,7 @@ public class ChaseCreditCardPaymentCategorizer /*extends PaymentCategorizer*/ {
 			if(tt == transType) {
 				switch(type) {
 				case CONTAINS:
-					return query.contains(target);
+					return query.toUpperCase().contains(target.toUpperCase());
 				case EQUALS:
 					return query.equalsIgnoreCase(target);
 				case REGEX:

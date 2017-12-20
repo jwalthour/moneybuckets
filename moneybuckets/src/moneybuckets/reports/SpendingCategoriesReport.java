@@ -81,7 +81,7 @@ public class SpendingCategoriesReport {
 		htmlFile.write(pieChartHolder.getBytes());
 		
 		// Table of transactions
-		htmlFile.write("<h2>Individual purchases</h2>".getBytes());
+		htmlFile.write("<h2>Individual transactions</h2>".getBytes());
 		htmlFile.write("<table>".getBytes());
 		for (Transaction transaction : categorizedTransactions) {
 			htmlFile.write("<tr><td>".getBytes());
