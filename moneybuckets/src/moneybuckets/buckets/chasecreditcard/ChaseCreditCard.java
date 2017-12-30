@@ -20,12 +20,13 @@ import org.apache.commons.csv.CSVRecord;
 
 import moneybuckets.Bucket;
 import moneybuckets.Transaction;
+import moneybuckets.TransactionCategorizer;
 
 public class ChaseCreditCard extends Bucket {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 	
 	private List<Transaction> transactions = new LinkedList<>();
-	private ChaseCreditCardTransactionCategorizer cat = new ChaseCreditCardTransactionCategorizer();
+	private TransactionCategorizer cat = new TransactionCategorizer();
 	public ChaseCreditCard() {
 		super("Chase Credit Card", false);
 	}

@@ -15,6 +15,7 @@ import org.apache.commons.csv.CSVRecord;
 
 public class TransactionCategorizer {
 	private static class Rule {
+		private String transType;
 		public enum MatchType {
 			CONTAINS,
 			REGEX,
@@ -24,32 +25,36 @@ public class TransactionCategorizer {
 		private String target = "";
 		private String category = "";
 		
-		public Rule(String target, MatchType type, String category) {
+		public Rule(String transType, String target, MatchType type, String category) {
+			this.transType = transType;
 			this.target = target;
 			this.type = type;
 			this.category = category;
 		}
 		
-		public boolean MeetsRule(String query) {
-			switch(type) {
-			case CONTAINS:
-				return query.contains(target);
-			case EQUALS:
-				return query.equalsIgnoreCase(target);
-			case REGEX:
-				// TODO
-				return false;
-			default:
+		public boolean MeetsRule(String tt, String query) {
+			if(tt.equalsIgnoreCase(transType)) {
+				switch(type) {
+				case CONTAINS:
+					return query.toUpperCase().contains(target.toUpperCase());
+				case EQUALS:
+					return query.equalsIgnoreCase(target);
+				case REGEX:
+					// TODO
+					return false;
+				default:
+					return false;
+				}
+			} else {
 				return false;
 			}
 		}
 		
 		public String getCategory() { return category; }
 	};
-	
 	private List<Rule> rules = new LinkedList<>();
-	
-	public void LoadCategorizationRules(String path) throws FileNotFoundException, IOException {
+
+	public void loadRules(String path) throws FileNotFoundException, IOException {
 		Reader in = new FileReader(path);
 		Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
 		for (CSVRecord record : records) {
@@ -59,15 +64,15 @@ public class TransactionCategorizer {
 			} catch (IllegalArgumentException e) {
 				// do nothing
 			}
-			Rule r = new Rule(record.get("target"), type, record.get("category"));
+			Rule r = new Rule(record.get("transType"), record.get("target"), type, record.get("category"));
 			rules.add(r);
 		}
 	}
 
-	public void CategorizeTransactions(List<Transaction> transactions) {
+	public void categorizeTransactions(List<Transaction> transactions) {
 		for (Transaction tr : transactions) {
 			for (Rule r : rules) {
-				if(r.MeetsRule(tr.getDescription())) {
+				if(r.MeetsRule(tr.getType(), tr.getDescription())) {
 					tr.setCategory(r.getCategory());
 //					System.out.println(tr.getDescription() + " matched rule " + r.getCategory());
 					break; // Don't process additional rules
@@ -76,7 +81,7 @@ public class TransactionCategorizer {
 		}
 	}
 	
-	public HashMap<String, Double> GetOutboundTotalsForCategories(List<Transaction> transactions) {
+	public static HashMap<String, Double> GetOutboundTotalsForCategories(List<Transaction> transactions) {
 		HashMap<String, Double> totalForCat = new HashMap<String, Double>();
 //		System.out.println(transactions);
 		final String defaultCat = "unknown";
