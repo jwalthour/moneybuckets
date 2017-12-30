@@ -22,7 +22,7 @@ import javax.swing.WindowConstants;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
-import moneybuckets.buckets.ChaseCreditCardBucket;
+import moneybuckets.buckets.chasecreditcard.ChaseCreditCardBucket;
 import moneybuckets.reports.SpendingCategoriesReport;
 
 public class MoneyBuckets {

@@ -1,4 +1,4 @@
-package moneybuckets.buckets;
+package moneybuckets.buckets.chasecreditcard;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -21,7 +21,7 @@ import org.apache.commons.csv.CSVRecord;
 import moneybuckets.Bucket;
 import moneybuckets.PaymentCategorizer;
 import moneybuckets.Transaction;
-import moneybuckets.buckets.ChaseCreditCardTransaction.TransactionType;
+import moneybuckets.buckets.chasecreditcard.ChaseCreditCardTransaction.TransactionType;
 
 public class ChaseCreditCardBucket extends Bucket {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);

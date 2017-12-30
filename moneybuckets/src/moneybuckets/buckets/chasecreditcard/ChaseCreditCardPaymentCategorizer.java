@@ -1,4 +1,4 @@
-package moneybuckets.buckets;
+package moneybuckets.buckets.chasecreditcard;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -11,7 +11,7 @@ import java.util.List;
 import org.apache.commons.csv.*;
 
 import moneybuckets.Transaction;
-import moneybuckets.buckets.ChaseCreditCardTransaction.*;
+import moneybuckets.buckets.chasecreditcard.ChaseCreditCardTransaction.*;
 
 public class ChaseCreditCardPaymentCategorizer /*extends PaymentCategorizer*/ {
 	private static class Rule {

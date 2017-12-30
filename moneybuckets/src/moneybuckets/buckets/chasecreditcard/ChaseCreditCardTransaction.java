@@ -1,4 +1,4 @@
-package moneybuckets.buckets;
+package moneybuckets.buckets.chasecreditcard;
 
 import java.util.Date;
 
