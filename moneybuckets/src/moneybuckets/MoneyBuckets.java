@@ -23,6 +23,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
 import moneybuckets.buckets.ChaseCreditCard;
+import moneybuckets.buckets.LakeSunapeeAcct;
 import moneybuckets.reports.SpendingCategoriesReport;
 
 public class MoneyBuckets {
@@ -30,6 +31,7 @@ public class MoneyBuckets {
 	public static void main(String[] args) {
 		// Just for testing right now
 		ChaseCreditCard chaseCard = new ChaseCreditCard();
+		LakeSunapeeAcct checkingAcct = new LakeSunapeeAcct("checking");
 		try {
 			// Hardcoded ones for now
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -40,14 +42,18 @@ public class MoneyBuckets {
 			chaseCard.loadStatement(args[0]);
 			chaseCard.loadCatRules("..\\configuration\\base_chase_rules.csv");
 			chaseCard.loadCatRules(args[1]);
+			checkingAcct.loadStatement(args[2]);
+			checkingAcct.loadCatRules("..\\configuration\\base_lakesun_rules.csv");
 			
 			// Process
 			chaseCard.categorizeTransactions();
 			List<Map.Entry<String, Double>> totals = chaseCard.getSortedListOfCategoriesAndTotals();
+			checkingAcct.categorizeTransactions();
 			
 			// Output
-			System.out.println(totals);
-			System.out.println(chaseCard.getUncategorizedTransactions());
+//			System.out.println(totals);
+//			System.out.println(chaseCard.getUncategorizedTransactions());
+			System.out.println(checkingAcct.getTransactions());
 			
 			// Save
 			SpendingCategoriesReport.generateHtmlReport(chaseCard.getTransactions(),
