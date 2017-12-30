@@ -19,16 +19,15 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
 import moneybuckets.Bucket;
-import moneybuckets.PaymentCategorizer;
 import moneybuckets.Transaction;
 import moneybuckets.buckets.chasecreditcard.ChaseCreditCardTransaction.TransactionType;
 
-public class ChaseCreditCardBucket extends Bucket {
+public class ChaseCreditCard extends Bucket {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 	
 	private List<Transaction> transactions = new LinkedList<>();
-	private ChaseCreditCardPaymentCategorizer cat = new ChaseCreditCardPaymentCategorizer();
-	public ChaseCreditCardBucket() {
+	private ChaseCreditCardTransactionCategorizer cat = new ChaseCreditCardTransactionCategorizer();
+	public ChaseCreditCard() {
 		super("Chase Credit Card", false);
 	}
 

@@ -13,7 +13,7 @@ import org.apache.commons.csv.*;
 import moneybuckets.Transaction;
 import moneybuckets.buckets.chasecreditcard.ChaseCreditCardTransaction.*;
 
-public class ChaseCreditCardPaymentCategorizer /*extends PaymentCategorizer*/ {
+public class ChaseCreditCardTransactionCategorizer {
 	private static class Rule {
 		private ChaseCreditCardTransaction.TransactionType transType;
 		public enum MatchType {
@@ -54,7 +54,7 @@ public class ChaseCreditCardPaymentCategorizer /*extends PaymentCategorizer*/ {
 	};
 	private List<Rule> rules = new LinkedList<>();
 
-	public ChaseCreditCardPaymentCategorizer() {
+	public ChaseCreditCardTransactionCategorizer() {
 		
 	}
 
