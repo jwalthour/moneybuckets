@@ -1,4 +1,4 @@
-package moneybuckets.buckets.lakesunapee;
+package moneybuckets.buckets;
 
 import moneybuckets.Bucket;
 
