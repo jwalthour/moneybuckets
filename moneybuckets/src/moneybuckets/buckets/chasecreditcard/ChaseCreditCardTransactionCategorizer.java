@@ -11,11 +11,10 @@ import java.util.List;
 import org.apache.commons.csv.*;
 
 import moneybuckets.Transaction;
-import moneybuckets.buckets.chasecreditcard.ChaseCreditCardTransaction.*;
 
 public class ChaseCreditCardTransactionCategorizer {
 	private static class Rule {
-		private ChaseCreditCardTransaction.TransactionType transType;
+		private String transType;
 		public enum MatchType {
 			CONTAINS,
 			REGEX,
@@ -25,15 +24,15 @@ public class ChaseCreditCardTransactionCategorizer {
 		private String target = "";
 		private String category = "";
 		
-		public Rule(ChaseCreditCardTransaction.TransactionType transType, String target, MatchType type, String category) {
+		public Rule(String transType, String target, MatchType type, String category) {
 			this.transType = transType;
 			this.target = target;
 			this.type = type;
 			this.category = category;
 		}
 		
-		public boolean MeetsRule(ChaseCreditCardTransaction.TransactionType tt, String query) {
-			if(tt == transType) {
+		public boolean MeetsRule(String tt, String query) {
+			if(tt.equalsIgnoreCase(transType)) {
 				switch(type) {
 				case CONTAINS:
 					return query.toUpperCase().contains(target.toUpperCase());
@@ -68,13 +67,7 @@ public class ChaseCreditCardTransactionCategorizer {
 			} catch (IllegalArgumentException e) {
 				// do nothing
 			}
-			ChaseCreditCardTransaction.TransactionType transType = TransactionType.SALE;
-			try {
-				transType = ChaseCreditCardTransaction.TransactionType.valueOf(record.get("transType"));
-			} catch (IllegalArgumentException e) {
-				// do nothing
-			}
-			Rule r = new Rule(transType, record.get("target"), type, record.get("category"));
+			Rule r = new Rule(record.get("transType"), record.get("target"), type, record.get("category"));
 			rules.add(r);
 		}
 	}
@@ -85,10 +78,9 @@ public class ChaseCreditCardTransactionCategorizer {
 	 */
 	public void categorizeTransactions(List<Transaction> transactions) {
 		for (Transaction tr : transactions) {
-			ChaseCreditCardTransaction ctr = (ChaseCreditCardTransaction)tr;
 			for (Rule r : rules) {
-				if(r.MeetsRule(ctr.getType(), ctr.getDescription())) {
-					ctr.setCategory(r.getCategory());
+				if(r.MeetsRule(tr.getType(), tr.getDescription())) {
+					tr.setCategory(r.getCategory());
 //					System.out.println(tr.getDescription() + " matched rule " + r.getCategory());
 					break; // Don't process additional rules
 				}

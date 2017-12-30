@@ -10,19 +10,21 @@ public class Transaction {
 	private Bucket sourceBucket, destBucket;
 	private double amount;
 	private Date timestamp;
-	private String description;
-	private String category;
+	private String type; // The type from the statement.  For example, a credit card may list the transaction type as "SALE", "FEE", or "PAYMENT".
+	private String description; // The description from the statement
+	private String category; // The category assigned in MoneyBuckets
 	private List<String> tags = new LinkedList<>();
 	
 	public static final String UNCATEGORIZED = "Uncategorized"; 
 	
 	public Transaction() {
-		this(null, null, "", 0, null);
+		this(null, null, "", "", 0, null);
 	}
 	
-	public Transaction(Bucket src, Bucket dst, String desc, double amt, Date ts) {
+	public Transaction(Bucket src, Bucket dst, String type, String desc, double amt, Date ts) {
 		sourceBucket = src;
 		destBucket = dst;
+		setType(type);
 		setDescription(desc);
 		amount = amt;
 		timestamp = ts;
@@ -31,7 +33,7 @@ public class Transaction {
 	
 	@Override
 	public String toString() {
-		return "{ description: \"" + getDescription() + "\", amount: " + getAmount() + ", category: \"" + getCategory() + "\"}";
+		return "{ type: \"" + getType() + "\", description: \"" + getDescription() + "\", amount: " + getAmount() + ", category: \"" + getCategory() + "\"}";
 	}
 	
 	// Trivial getters and setters
@@ -47,6 +49,8 @@ public class Transaction {
 	public void setCategory(String category) { this.category = category; }
 	public String getDescription() { return description; }
 	public void setDescription(String description) { this.description = description; }
+	public String getType() { return type; }
+	public void setType(String type) { this.type = type; }
 	
 	public void addTag(String tag) { tags.add(tag); }
 	public boolean hasTag(String tag) { return tags.contains(tag); }

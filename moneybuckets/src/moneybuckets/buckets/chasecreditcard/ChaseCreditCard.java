@@ -20,7 +20,6 @@ import org.apache.commons.csv.CSVRecord;
 
 import moneybuckets.Bucket;
 import moneybuckets.Transaction;
-import moneybuckets.buckets.chasecreditcard.ChaseCreditCardTransaction.TransactionType;
 
 public class ChaseCreditCard extends Bucket {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
@@ -37,12 +36,6 @@ public class ChaseCreditCard extends Bucket {
 		for (CSVRecord record : records) {
 //			System.out.println(record);
 			String amt_str = record.get(record.size() - 1); // For some reason the description is sometimes several columns.  I think that's due to commas in descriptions.  But the amount is always the last column.
-			ChaseCreditCardTransaction.TransactionType transType = TransactionType.SALE;
-			try {
-				transType = ChaseCreditCardTransaction.TransactionType.valueOf(record.get("Type").toUpperCase());
-			} catch (IllegalArgumentException e) {
-				// do nothing
-			}
 			double amt = Double.parseDouble(amt_str);
 			Date date = null;
 			try {
@@ -50,7 +43,7 @@ public class ChaseCreditCard extends Bucket {
 			} catch (ParseException e) {
 				// do nothing
 			}
-			ChaseCreditCardTransaction tr = new ChaseCreditCardTransaction(this, Bucket.getExternalBucket(), record.get("Description"), amt, date, transType);
+			Transaction tr = new Transaction(this, Bucket.getExternalBucket(), record.get("Type").toUpperCase(), record.get("Description"), amt, date);
 			transactions.add(tr);
 		}
 	}
@@ -91,15 +84,14 @@ public class ChaseCreditCard extends Bucket {
 //		System.out.println(transactions);
 		
 		for (Transaction tr : transactions) {
-			ChaseCreditCardTransaction ctr = (ChaseCreditCardTransaction)tr;
-			String cat = ctr.getCategory();
-			if(ctr.getType() != TransactionType.PAYMENT) {
+			String cat = tr.getCategory();
+			if(tr.getType() != "PAYMENT") {
 				if(totalForCat.containsKey(cat)) {
 					// Not the first transaction
-					totalForCat.put(cat, totalForCat.get(cat) + ctr.getAmount());
+					totalForCat.put(cat, totalForCat.get(cat) + tr.getAmount());
 				} else {
 					// Very first transaction
-					totalForCat.put(cat, ctr.getAmount());
+					totalForCat.put(cat, tr.getAmount());
 				}
 			}
 		}
