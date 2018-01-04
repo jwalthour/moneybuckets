@@ -35,8 +35,8 @@ public class MoneyBuckets {
 		try {
 			// Hardcoded ones for now
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-			Date timeRangeStart = dateFormat.parse("2017-12-19");
-			Date timeRangeEnd   = dateFormat.parse("2017-12-27");
+			Date timeRangeStart = dateFormat.parse("2017-12-26");
+			Date timeRangeEnd   = dateFormat.parse("2018-1-2");
 			
 			// Load from CSV
 			chaseCard.loadStatement(args[0]);
