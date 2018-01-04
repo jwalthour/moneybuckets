@@ -20,7 +20,7 @@ import org.apache.commons.csv.CSVRecord;
 
 import moneybuckets.Bucket;
 import moneybuckets.Transaction;
-import moneybuckets.TransactionCategorizer;
+import moneybuckets.ExpenseCategorizer;
 
 public class ChaseCreditCard extends Bucket {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);

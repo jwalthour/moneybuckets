@@ -14,7 +14,7 @@ import java.util.Map;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
-public class TransactionCategorizer {
+public class ExpenseCategorizer {
 	private static class Rule {
 		private String transType;
 		public enum MatchType {
