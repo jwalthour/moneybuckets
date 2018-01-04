@@ -1,5 +1,0 @@
-transType,target,type,category
-CR,"Interest Deposit",EQUALS,"Account interest"
-CR,"Mobile Deposit",CONTAINS,"Deposit from mobile"
-CR,"PAYROLL",CONTAINS,"Salary"
-CR,"Deposit",EQUALS,"In-person deposit"

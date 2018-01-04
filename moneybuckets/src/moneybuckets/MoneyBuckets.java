@@ -33,29 +33,37 @@ public class MoneyBuckets {
 		ChaseCreditCard chaseCard = new ChaseCreditCard();
 		LakeSunapeeAcct checkingAcct = new LakeSunapeeAcct("checking");
 		LakeSunapeeAcct savingsAcct = new LakeSunapeeAcct("savings");
-		TransactionCategorizer cat = new TransactionCategorizer();
+		TransactionCategorizer expenseCat = new TransactionCategorizer();
+		TransactionCategorizer incomeCat = new TransactionCategorizer();
 		try {
 			// Hardcoded ones for now
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-			Date timeRangeStart = dateFormat.parse("2017-12-26");
+			Date timeRangeStart = dateFormat.parse("2017-12-2");
 			Date timeRangeEnd   = dateFormat.parse("2018-1-2");
 			
 			// Load from CSV
 			chaseCard.loadStatement(args[0]);
-			cat.loadRules("..\\configuration\\base_expense_rules.csv");
-			cat.loadRules(args[1]);
+			expenseCat.loadRules("..\\configuration\\base_expense_rules.csv");
+			expenseCat.loadRules(args[1]);
 			checkingAcct.loadStatement(args[2]);
+			incomeCat.loadRules("..\\configuration\\base_income_rules.csv");
 			
 			// Process
 			List<Transaction> expenses = chaseCard.getExpenses(timeRangeStart, timeRangeEnd);
 			expenses.addAll(checkingAcct.getExpenses(timeRangeStart, timeRangeEnd));
-			cat.categorizeTransactions(expenses);
-			List<Map.Entry<String, Double>> totals = TransactionCategorizer.GetSortedListOfCategoriesAndTotals(expenses);
+			expenseCat.categorizeTransactions(expenses);
+			List<Transaction> income = checkingAcct.getIncomes(timeRangeStart, timeRangeEnd);
+			incomeCat.categorizeTransactions(income);
+
+			List<Map.Entry<String, Double>> expenseTotals = TransactionCategorizer.GetSortedListOfCategoriesAndTotals(expenses);
+			List<Map.Entry<String, Double>> incomeTotals  = TransactionCategorizer.GetSortedListOfCategoriesAndTotals(income  );
+			System.out.println(expenseTotals);
+			System.out.println(incomeTotals);
 			
 			// Output
 //			System.out.println(totals);
 //			System.out.println(chaseCard.getUncategorizedTransactions());
-			System.out.println(checkingAcct.getTransactions());
+//			System.out.println(checkingAcct.getTransactions());
 			
 			// Save
 			SpendingCategoriesReport.generateHtmlReport(expenses,

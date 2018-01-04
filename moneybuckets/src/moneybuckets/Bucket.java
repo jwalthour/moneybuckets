@@ -39,7 +39,7 @@ public class Bucket {
 		}
 		return expenses;
 	}
-	
+
 	public List<Transaction> getExpenses(Date timeRangeStart, Date timeRangeEnd) {
 		List<Transaction> expenses = new LinkedList<>();
 		for (Transaction tr : transactions) {
@@ -51,8 +51,18 @@ public class Bucket {
 		}
 		return expenses;
 	}
-	
-	
+
+	public List<Transaction> getIncomes(Date timeRangeStart, Date timeRangeEnd) {
+		List<Transaction> expenses = new LinkedList<>();
+		for (Transaction tr : transactions) {
+			if(tr.getDestBucket() == this) {
+				if(tr.getTimestamp().after(timeRangeStart) && tr.getTimestamp().before(timeRangeEnd)) {
+					expenses.add(tr);
+				}
+			}
+		}
+		return expenses;
+	}
 
 	// Singleton one to represent general external entities
 	private static Bucket external = null;

@@ -1,0 +1,5 @@
+target,type,category
+"Interest Deposit",EQUALS,"Account interest"
+"Mobile Deposit",CONTAINS,"Deposit from mobile"
+"PAYROLL",CONTAINS,"Salary"
+"Deposit",EQUALS,"In-person deposit"
