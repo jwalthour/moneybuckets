@@ -25,8 +25,6 @@ import moneybuckets.TransactionCategorizer;
 public class ChaseCreditCard extends Bucket {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 	
-	private List<Transaction> transactions = new LinkedList<>();
-	private TransactionCategorizer cat = new TransactionCategorizer();
 	public ChaseCreditCard() {
 		super("Chase Credit Card", false);
 	}
@@ -63,6 +61,7 @@ public class ChaseCreditCard extends Bucket {
 				source = getInstitutionalBucket();
 				dest   = this;
 			} else {
+				System.out.println("Warning: couldn't understand a Chase transaction.");
 				source = null; // unknown
 				dest   = null; // unknown
 			}
@@ -71,67 +70,6 @@ public class ChaseCreditCard extends Bucket {
 		}
 	}
 
-	public void loadCatRules(String path) throws FileNotFoundException, IOException {
-		cat.loadRules(path);
-	}
-	
-	public void categorizeTransactions() {
-		cat.categorizeTransactions(transactions);
-	}
-	
-	public List<Transaction> getTransactions() {
-		return (List<Transaction>)transactions;
-	}
-		
-	public List<Map.Entry<String, Double>>  getSortedListOfCategoriesAndTotals() {
-		HashMap<String, Double> totalForCat = getOutboundTotalsForCategories();
-		List<Map.Entry<String, Double>> list = new LinkedList<>(totalForCat.entrySet());
-		list.sort(new Comparator<Map.Entry<String, Double>>() {
-
-			@Override
-			public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
-		       if (o1.getValue() > o2.getValue()) {
-		           return 1;
-		       } else if (o1.getValue() < o2.getValue()){
-		           return -1;
-		       } else {
-		           return 0;
-		       }
-			}
-		});
-		return list;
-	}
-	
-	public HashMap<String, Double> getOutboundTotalsForCategories() {
-		HashMap<String, Double> totalForCat = new HashMap<String, Double>();
-//		System.out.println(transactions);
-		
-		for (Transaction tr : transactions) {
-			String cat = tr.getCategory();
-			if(tr.getType() != "PAYMENT") {
-				if(totalForCat.containsKey(cat)) {
-					// Not the first transaction
-					totalForCat.put(cat, totalForCat.get(cat) + tr.getAmount());
-				} else {
-					// Very first transaction
-					totalForCat.put(cat, tr.getAmount());
-				}
-			}
-		}
-		return totalForCat;
-	}
-	
-	public List<Transaction> getUncategorizedTransactions() {
-		List<Transaction> uncat = new LinkedList<>();
-		
-		for (Transaction tr : transactions) {
-			if(tr.getCategory().equalsIgnoreCase(Transaction.UNCATEGORIZED)) {
-				uncat.add(tr);
-			}
-		}		
-		return uncat;
-	}
-	
 	// Singleton bucket to represent the financial institution
 	private static Bucket chase = null;
 	public static Bucket getInstitutionalBucket() {

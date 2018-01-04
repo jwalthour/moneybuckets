@@ -22,8 +22,6 @@ import moneybuckets.TransactionCategorizer;
 public class LakeSunapeeAcct extends Bucket {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 
-	private List<Transaction> transactions = new LinkedList<>();
-	private TransactionCategorizer cat = new TransactionCategorizer();
 	public LakeSunapeeAcct() {
 		super("Lake Sunapee account", false);
 	}
@@ -66,24 +64,13 @@ public class LakeSunapeeAcct extends Bucket {
 				}
 				dest = this;
 			} else {
+				System.out.println("Warning: couldn't understand a Lake Sunapee transaction.");
 				source = null; // unknown
 				dest   = null; // unknown
 			}
 			Transaction tr = new Transaction(source, dest, record.get("CR/DR").toUpperCase(), record.get("Description"), amt, date);
 			transactions.add(tr);
 		}
-	}
-	
-	public void loadCatRules(String path) throws FileNotFoundException, IOException {
-		cat.loadRules(path);
-	}
-	
-	public void categorizeTransactions() {
-		cat.categorizeTransactions(transactions);
-	}
-	
-	public List<Transaction> getTransactions() {
-		return (List<Transaction>)transactions;
 	}
 	
 	// Singleton bucket to represent the financial institution

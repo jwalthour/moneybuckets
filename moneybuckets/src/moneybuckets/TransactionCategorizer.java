@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -81,7 +82,7 @@ public class TransactionCategorizer {
 		}
 	}
 	
-	public static HashMap<String, Double> GetOutboundTotalsForCategories(List<Transaction> transactions) {
+	public static HashMap<String, Double> GetTotalsForCategories(List<Transaction> transactions) {
 		HashMap<String, Double> totalForCat = new HashMap<String, Double>();
 //		System.out.println(transactions);
 		final String defaultCat = "unknown";
@@ -98,4 +99,24 @@ public class TransactionCategorizer {
 		}
 		return totalForCat;
 	}
+	
+	public static List<Map.Entry<String, Double>>  GetSortedListOfCategoriesAndTotals( List<Transaction> transactions) {
+		HashMap<String, Double> totalForCat = GetTotalsForCategories(transactions);
+		List<Map.Entry<String, Double>> list = new LinkedList<>(totalForCat.entrySet());
+		list.sort(new Comparator<Map.Entry<String, Double>>() {
+
+			@Override
+			public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+		       if (o1.getValue() > o2.getValue()) {
+		           return 1;
+		       } else if (o1.getValue() < o2.getValue()){
+		           return -1;
+		       } else {
+		           return 0;
+		       }
+			}
+		});
+		return list;
+	}
+
 }

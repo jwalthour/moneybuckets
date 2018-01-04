@@ -32,6 +32,8 @@ public class MoneyBuckets {
 		// Just for testing right now
 		ChaseCreditCard chaseCard = new ChaseCreditCard();
 		LakeSunapeeAcct checkingAcct = new LakeSunapeeAcct("checking");
+		LakeSunapeeAcct savingsAcct = new LakeSunapeeAcct("savings");
+		TransactionCategorizer cat = new TransactionCategorizer();
 		try {
 			// Hardcoded ones for now
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -40,15 +42,15 @@ public class MoneyBuckets {
 			
 			// Load from CSV
 			chaseCard.loadStatement(args[0]);
-			chaseCard.loadCatRules("..\\configuration\\base_chase_rules.csv");
-			chaseCard.loadCatRules(args[1]);
+			cat.loadRules("..\\configuration\\base_expense_rules.csv");
+			cat.loadRules(args[1]);
 			checkingAcct.loadStatement(args[2]);
-			checkingAcct.loadCatRules("..\\configuration\\base_lakesun_rules.csv");
 			
 			// Process
-			chaseCard.categorizeTransactions();
-			List<Map.Entry<String, Double>> totals = chaseCard.getSortedListOfCategoriesAndTotals();
-			checkingAcct.categorizeTransactions();
+			List<Transaction> expenses = chaseCard.getExpenses();
+			expenses.addAll(checkingAcct.getExpenses());
+			cat.categorizeTransactions(expenses);
+			List<Map.Entry<String, Double>> totals = TransactionCategorizer.GetSortedListOfCategoriesAndTotals(expenses);
 			
 			// Output
 //			System.out.println(totals);
@@ -56,8 +58,8 @@ public class MoneyBuckets {
 			System.out.println(checkingAcct.getTransactions());
 			
 			// Save
-			SpendingCategoriesReport.generateHtmlReport(chaseCard.getTransactions(),
-					chaseCard.getOutboundTotalsForCategories(), 
+			SpendingCategoriesReport.generateHtmlReport(expenses,
+					TransactionCategorizer.GetTotalsForCategories(expenses), 
 					Paths.get("..", "generated_reports", "spending_report"),
 					timeRangeStart, timeRangeEnd);
 			

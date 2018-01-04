@@ -7,6 +7,6 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="moneybuckets.MoneyBuckets"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="../exported_statements/Chase8667_Activity_20180102.CSV&#13;&#10;../configuration/personal_chase_rules.csv&#13;&#10;../exported_statements/lakesun_checking_2017-6-1_to_2017-12-29.CSV"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="../exported_statements/Chase8667_Activity_20180102.CSV&#13;&#10;../configuration/personal_expense_rules.csv&#13;&#10;../exported_statements/lakesun_checking_2017-6-1_to_2017-12-29.CSV"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="moneybuckets"/>
 </launchConfiguration>

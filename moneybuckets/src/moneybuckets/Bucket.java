@@ -1,9 +1,13 @@
 package moneybuckets;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class Bucket {
 	private boolean isExternal = false;
 	private String informalName = "";
 	private String institutionName = "";
+	protected List<Transaction> transactions = new LinkedList<>();
 //	private String accountNumber = "";
 	// TODO: balance history
 	
@@ -18,6 +22,21 @@ public class Bucket {
 	public Bucket(String informal_name, boolean is_external) {
 		informalName = informal_name;
 		isExternal = is_external;
+	}
+	
+
+	public List<Transaction> getTransactions() {
+		return transactions;
+	}
+		
+	public List<Transaction> getExpenses() {
+		List<Transaction> expenses = new LinkedList<>();
+		for (Transaction tr : transactions) {
+			if(tr.getDestBucket() == Bucket.getExternalBucket()) {
+				expenses.add(tr);
+			}
+		}
+		return expenses;
 	}
 
 	// Singleton one to represent general external entities
