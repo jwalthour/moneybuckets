@@ -20,7 +20,7 @@ import moneybuckets.Transaction;
 import moneybuckets.ExpenseCategorizer;
 
 public class LakeSunapeeAcct extends Bucket {
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
 
 	public LakeSunapeeAcct() {
 		super("Lake Sunapee account", false);

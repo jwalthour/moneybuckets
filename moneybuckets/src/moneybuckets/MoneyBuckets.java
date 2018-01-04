@@ -47,8 +47,8 @@ public class MoneyBuckets {
 			checkingAcct.loadStatement(args[2]);
 			
 			// Process
-			List<Transaction> expenses = chaseCard.getExpenses();
-			expenses.addAll(checkingAcct.getExpenses());
+			List<Transaction> expenses = chaseCard.getExpenses(timeRangeStart, timeRangeEnd);
+			expenses.addAll(checkingAcct.getExpenses(timeRangeStart, timeRangeEnd));
 			cat.categorizeTransactions(expenses);
 			List<Map.Entry<String, Double>> totals = ExpenseCategorizer.GetSortedListOfCategoriesAndTotals(expenses);
 			
