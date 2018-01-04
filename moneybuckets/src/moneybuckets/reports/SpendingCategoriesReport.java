@@ -124,7 +124,7 @@ public class SpendingCategoriesReport {
 		DefaultPieDataset dataset= new DefaultPieDataset();
 		
 		for(Map.Entry<String, Double> pair : totals) {
-			dataset.setValue(pair.getKey(), -pair.getValue());
+			dataset.setValue(pair.getKey(), pair.getValue());
 		}
 		
 		JFreeChart chart = ChartFactory.createPieChart(

@@ -37,14 +37,36 @@ public class ChaseCreditCard extends Bucket {
 		for (CSVRecord record : records) {
 //			System.out.println(record);
 			String amt_str = record.get(record.size() - 1); // For some reason the description is sometimes several columns.  I think that's due to commas in descriptions.  But the amount is always the last column.
-			double amt = Double.parseDouble(amt_str);
+			double amt = Math.abs(Double.parseDouble(amt_str));
 			Date date = null;
 			try {
 				date = DATE_FORMAT.parse(record.get(1));
 			} catch (ParseException e) {
 				// do nothing
 			}
-			Transaction tr = new Transaction(this, Bucket.getExternalBucket(), record.get("Type").toUpperCase(), record.get("Description"), amt, date);
+			// Coarse categorization: into bucket or out of bucket
+			Bucket source, dest;
+			if(record.get("Type").equalsIgnoreCase("Sale")) {
+				// Normal purchases
+				source = this;
+				dest   = Bucket.getExternalBucket();
+			} else if (record.get("Type").equalsIgnoreCase("Payment")) {
+				// Payments toward the balance
+				source = null; // unknown
+				dest   = this;
+			} else if (record.get("Type").equalsIgnoreCase("Fee")) {
+				// Interest and presumably other charges
+				source = this;
+				dest   = getInstitutionalBucket();
+			} else if (record.get("Type").equalsIgnoreCase("Adjustment")) {
+				// Redeemed rewards points
+				source = getInstitutionalBucket();
+				dest   = this;
+			} else {
+				source = null; // unknown
+				dest   = null; // unknown
+			}
+			Transaction tr = new Transaction(source, dest, record.get("Type").toUpperCase(), record.get("Description"), amt, date);
 			transactions.add(tr);
 		}
 	}
@@ -108,5 +130,14 @@ public class ChaseCreditCard extends Bucket {
 			}
 		}		
 		return uncat;
+	}
+	
+	// Singleton bucket to represent the financial institution
+	private static Bucket chase = null;
+	public static Bucket getInstitutionalBucket() {
+		if(chase == null) {
+			chase = new Bucket("Chase Card Services");
+		}
+		return chase;
 	}
 }
