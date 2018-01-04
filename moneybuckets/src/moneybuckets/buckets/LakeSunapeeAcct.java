@@ -29,7 +29,6 @@ public class LakeSunapeeAcct extends Bucket {
 	public LakeSunapeeAcct(String informal_name) {
 		super("Lake Sunapee " + informal_name, false);
 	}
-	
 
 	public void loadStatement(String path) throws FileNotFoundException, IOException {
 		// Note: Lake Sunapee statements also include a "Serial Number" column.
@@ -54,7 +53,12 @@ public class LakeSunapeeAcct extends Bucket {
 			if(record.get("CR/DR").equalsIgnoreCase("DR")) {
 				// Debit ... R?
 				source = this;
-				dest   = Bucket.getExternalBucket();
+				// TODO: This really should be configurable	
+				if(record.get("Description").contains("EPAY       CHASE CREDIT CRD WEB")) {
+					dest = ChaseCreditCard.getInstitutionalBucket();
+				} else {
+					dest = Bucket.getExternalBucket();
+				}
 			} else if (record.get("CR/DR").equalsIgnoreCase("CR")) {
 				// CRedit?
 				if(record.get("Description").equalsIgnoreCase("Interest Deposit")) {
