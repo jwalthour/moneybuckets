@@ -17,7 +17,7 @@ import org.apache.commons.csv.CSVRecord;
 
 import moneybuckets.Bucket;
 import moneybuckets.Transaction;
-import moneybuckets.ExpenseCategorizer;
+import moneybuckets.TransactionCategorizer;
 
 public class LakeSunapeeAcct extends Bucket {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);

@@ -33,7 +33,7 @@ public class MoneyBuckets {
 		ChaseCreditCard chaseCard = new ChaseCreditCard();
 		LakeSunapeeAcct checkingAcct = new LakeSunapeeAcct("checking");
 		LakeSunapeeAcct savingsAcct = new LakeSunapeeAcct("savings");
-		ExpenseCategorizer cat = new ExpenseCategorizer();
+		TransactionCategorizer cat = new TransactionCategorizer();
 		try {
 			// Hardcoded ones for now
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -50,7 +50,7 @@ public class MoneyBuckets {
 			List<Transaction> expenses = chaseCard.getExpenses(timeRangeStart, timeRangeEnd);
 			expenses.addAll(checkingAcct.getExpenses(timeRangeStart, timeRangeEnd));
 			cat.categorizeTransactions(expenses);
-			List<Map.Entry<String, Double>> totals = ExpenseCategorizer.GetSortedListOfCategoriesAndTotals(expenses);
+			List<Map.Entry<String, Double>> totals = TransactionCategorizer.GetSortedListOfCategoriesAndTotals(expenses);
 			
 			// Output
 //			System.out.println(totals);
@@ -59,7 +59,7 @@ public class MoneyBuckets {
 			
 			// Save
 			SpendingCategoriesReport.generateHtmlReport(expenses,
-					ExpenseCategorizer.GetTotalsForCategories(expenses), 
+					TransactionCategorizer.GetTotalsForCategories(expenses), 
 					Paths.get("..", "generated_reports", "spending_report"),
 					timeRangeStart, timeRangeEnd);
 			
