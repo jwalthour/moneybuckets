@@ -51,7 +51,25 @@ public class LakeSunapeeAcct extends Bucket {
 			} catch (ParseException e) {
 				// do nothing
 			}
-			Transaction tr = new Transaction(this, Bucket.getExternalBucket(), record.get("CR/DR").toUpperCase(), record.get("Description"), amt, date);
+			// Populate what bucket information we have
+			Bucket source, dest;
+			if(record.get("CR/DR").equalsIgnoreCase("DR")) {
+				// Debit ... R?
+				source = this;
+				dest   = Bucket.getExternalBucket();
+			} else if (record.get("CR/DR").equalsIgnoreCase("CR")) {
+				// CRedit?
+				if(record.get("Description").equalsIgnoreCase("Interest Deposit")) {
+					source = getInstitutionalBucket();					
+				} else {
+					source = null; // unknown
+				}
+				dest = this;
+			} else {
+				source = null; // unknown
+				dest   = null; // unknown
+			}
+			Transaction tr = new Transaction(source, dest, record.get("CR/DR").toUpperCase(), record.get("Description"), amt, date);
 			transactions.add(tr);
 		}
 	}
@@ -66,6 +84,15 @@ public class LakeSunapeeAcct extends Bucket {
 	
 	public List<Transaction> getTransactions() {
 		return (List<Transaction>)transactions;
+	}
+	
+	// Singleton bucket to represent the financial institution
+	private static Bucket chase = null;
+	public static Bucket getInstitutionalBucket() {
+		if(chase == null) {
+			chase = new Bucket("Lake Sunapee Bank");
+		}
+		return chase;
 	}
 		
 }

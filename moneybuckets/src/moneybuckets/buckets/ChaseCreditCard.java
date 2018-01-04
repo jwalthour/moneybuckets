@@ -44,7 +44,7 @@ public class ChaseCreditCard extends Bucket {
 			} catch (ParseException e) {
 				// do nothing
 			}
-			// Coarse categorization: into bucket or out of bucket
+			// Populate what bucket information we have
 			Bucket source, dest;
 			if(record.get("Type").equalsIgnoreCase("Sale")) {
 				// Normal purchases
