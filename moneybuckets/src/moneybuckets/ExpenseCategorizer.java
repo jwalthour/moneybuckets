@@ -16,7 +16,6 @@ import org.apache.commons.csv.CSVRecord;
 
 public class ExpenseCategorizer {
 	private static class Rule {
-		private String transType;
 		public enum MatchType {
 			CONTAINS,
 			REGEX,
@@ -26,27 +25,22 @@ public class ExpenseCategorizer {
 		private String target = "";
 		private String category = "";
 		
-		public Rule(String transType, String target, MatchType type, String category) {
-			this.transType = transType;
+		public Rule(String target, MatchType type, String category) {
 			this.target = target;
 			this.type = type;
 			this.category = category;
 		}
 		
 		public boolean MeetsRule(String tt, String query) {
-			if(tt.equalsIgnoreCase(transType)) {
-				switch(type) {
-				case CONTAINS:
-					return query.toUpperCase().contains(target.toUpperCase());
-				case EQUALS:
-					return query.equalsIgnoreCase(target);
-				case REGEX:
-					// TODO
-					return false;
-				default:
-					return false;
-				}
-			} else {
+			switch(type) {
+			case CONTAINS:
+				return query.toUpperCase().contains(target.toUpperCase());
+			case EQUALS:
+				return query.equalsIgnoreCase(target);
+			case REGEX:
+				// TODO
+				return false;
+			default:
 				return false;
 			}
 		}
@@ -65,7 +59,7 @@ public class ExpenseCategorizer {
 			} catch (IllegalArgumentException e) {
 				// do nothing
 			}
-			Rule r = new Rule(record.get("transType"), record.get("target"), type, record.get("category"));
+			Rule r = new Rule(record.get("target"), type, record.get("category"));
 			rules.add(r);
 		}
 	}
