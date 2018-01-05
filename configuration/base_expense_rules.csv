@@ -26,4 +26,5 @@ target,type,category
 "LIBERTY MUTUAL",CONTAINS,"Loan payments"
 "FEDLOANSERVICING",CONTAINS,"Loan payments"
 "LEASES",CONTAINS,"Car payments"
+"VZWRLSS",CONTAINS,"Utilities"
 "Check ",CONTAINS,"Check payments"

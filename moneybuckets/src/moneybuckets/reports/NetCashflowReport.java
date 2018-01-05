@@ -44,11 +44,9 @@ public class NetCashflowReport {
 		
 		double totalIncome = 0, totalExpense = 0;
 		for (Map.Entry<String, Double> entry : incomeTotals) {
-			System.out.println("Income: " + entry.getKey()); 
 			totalIncome += entry.getValue();			
 		}
 		for (Map.Entry<String, Double> entry : expenseTotals) {
-			System.out.println("Expense: " + entry.getKey()); 
 			totalExpense += entry.getValue();			
 		}
 
@@ -90,9 +88,9 @@ public class NetCashflowReport {
 		}
 		
 		final JFreeChart chart = ChartFactory.createStackedBarChart(
-		            "Stacked Bar Chart Demo 4",  // chart title
-		            "Category",                  // domain axis label
-		            "Value",                     // range axis label
+		            "Income vs expenses",  // chart title
+		            "",                  // domain axis label
+		            "",                     // range axis label
 		            ds,                     // data
 		            PlotOrientation.HORIZONTAL,    // the plot orientation
 		            true,                        // legend
