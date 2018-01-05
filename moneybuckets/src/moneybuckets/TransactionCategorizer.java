@@ -21,6 +21,17 @@ public class TransactionCategorizer {
 			REGEX,
 			EQUALS,
 		};
+		public static MatchType mtFromString(String typeString) {
+			Rule.MatchType type = Rule.MatchType.CONTAINS;
+			try {
+				type = Rule.MatchType.valueOf(typeString);
+			} catch (IllegalArgumentException e) {
+				// do nothing
+			}
+			return type;
+		}
+		
+		
 		private MatchType type = MatchType.CONTAINS;
 		private String target = "";
 		private String category = "";
@@ -53,13 +64,7 @@ public class TransactionCategorizer {
 		Reader in = new FileReader(path);
 		Iterable<CSVRecord> records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
 		for (CSVRecord record : records) {
-			Rule.MatchType type = Rule.MatchType.CONTAINS;
-			try {
-				type = Rule.MatchType.valueOf(record.get("type"));
-			} catch (IllegalArgumentException e) {
-				// do nothing
-			}
-			Rule r = new Rule(record.get("target"), type, record.get("category"));
+			Rule r = new Rule(record.get("target"), Rule.mtFromString(record.get("type")), record.get("category"));
 			rules.add(r);
 		}
 	}
