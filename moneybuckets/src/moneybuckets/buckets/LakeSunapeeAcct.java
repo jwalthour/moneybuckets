@@ -53,12 +53,7 @@ public class LakeSunapeeAcct extends Bucket {
 			if(record.get("CR/DR").equalsIgnoreCase("DR")) {
 				// Debit ... R?
 				source = this;
-				// TODO: This really should be configurable	
-				if(record.get("Description").contains("EPAY       CHASE CREDIT CRD WEB")) {
-					dest = ChaseCreditCard.getInstitutionalBucket();
-				} else {
-					dest = Bucket.getExternalBucket();
-				}
+				dest   = null; // may be a sale, may be a transfer
 			} else if (record.get("CR/DR").equalsIgnoreCase("CR")) {
 				// CRedit?
 				if(record.get("Description").equalsIgnoreCase("Interest Deposit")) {
