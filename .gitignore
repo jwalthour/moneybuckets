@@ -2,3 +2,4 @@
 .recommenders/
 exported_statements/*
 generated_reports/*
+configuration/personal_*

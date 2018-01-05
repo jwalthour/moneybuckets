@@ -24,6 +24,7 @@ import org.jfree.chart.JFreeChart;
 
 import moneybuckets.buckets.ChaseCreditCard;
 import moneybuckets.buckets.LakeSunapeeAcct;
+import moneybuckets.reports.NetCashflowReport;
 import moneybuckets.reports.SpendingCategoriesReport;
 
 public class MoneyBuckets {
@@ -59,6 +60,8 @@ public class MoneyBuckets {
 			List<Map.Entry<String, Double>> incomeTotals  = TransactionCategorizer.GetSortedListOfCategoriesAndTotals(income  );
 			System.out.println(expenseTotals);
 			System.out.println(incomeTotals);
+			
+			NetCashflowReport.generateHtmlReport(incomeTotals, expenseTotals, Paths.get("..", "generated_reports", "cashflow_report"), timeRangeStart, timeRangeEnd);
 			
 			// Output
 //			System.out.println(totals);
