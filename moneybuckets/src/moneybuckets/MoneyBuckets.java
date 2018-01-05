@@ -50,10 +50,14 @@ public class MoneyBuckets {
 			incomeCat.loadRules("..\\configuration\\base_income_rules.csv");
 			
 			// Process
-			List<Transaction> expenses = chaseCard.getExpenses(timeRangeStart, timeRangeEnd);
+			List<Transaction> expenses = new LinkedList<>();
+			expenses.addAll(chaseCard.getExpenses(timeRangeStart, timeRangeEnd));
 			expenses.addAll(checkingAcct.getExpenses(timeRangeStart, timeRangeEnd));
+			expenses.addAll(savingsAcct.getExpenses(timeRangeStart, timeRangeEnd));
 			expenseCat.categorizeTransactions(expenses);
-			List<Transaction> income = checkingAcct.getIncomes(timeRangeStart, timeRangeEnd);
+			List<Transaction> income = new LinkedList<>();
+			income.addAll(checkingAcct.getIncomes(timeRangeStart, timeRangeEnd));
+			income.addAll(savingsAcct.getIncomes(timeRangeStart, timeRangeEnd));
 			incomeCat.categorizeTransactions(income);
 
 			List<Map.Entry<String, Double>> expenseTotals = TransactionCategorizer.GetSortedListOfCategoriesAndTotals(expenses);
