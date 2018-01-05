@@ -43,7 +43,7 @@ public class Bucket {
 	public List<Transaction> getExpenses(Date timeRangeStart, Date timeRangeEnd) {
 		List<Transaction> expenses = new LinkedList<>();
 		for (Transaction tr : transactions) {
-			if(tr.getDestBucket() == Bucket.getExternalBucket()) {
+			if(tr.getSourceBucket() == this) {
 				if(tr.getTimestamp().after(timeRangeStart) && tr.getTimestamp().before(timeRangeEnd)) {
 					expenses.add(tr);
 				}
