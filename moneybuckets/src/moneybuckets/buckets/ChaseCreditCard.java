@@ -35,7 +35,8 @@ public class ChaseCreditCard extends Bucket {
 		for (CSVRecord record : records) {
 //			System.out.println(record);
 			String amt_str = record.get(record.size() - 1); // For some reason the description is sometimes several columns.  I think that's due to commas in descriptions.  But the amount is always the last column.
-			double amt = Math.abs(Double.parseDouble(amt_str));
+			double amt_raw = Double.parseDouble(amt_str);
+			double amt_pos = Math.abs(amt_raw);
 			Date date = null;
 			try {
 				date = DATE_FORMAT.parse(record.get(1));
@@ -60,12 +61,21 @@ public class ChaseCreditCard extends Bucket {
 				// Redeemed rewards points
 				source = getInstitutionalBucket();
 				dest   = this;
+			} else if (record.get("Type").equalsIgnoreCase("Return")) {
+				// A reversed sale
+				source = Bucket.getExternalBucket();
+				dest   = this;
 			} else {
-				System.out.println("Warning: couldn't understand a Chase transaction.");
-				source = null; // unknown
-				dest   = null; // unknown
+				// Fill in based on the sign of the transaction
+				if(amt_raw > 0) {
+					source = null; // unknown
+					dest   = this; // income
+				} else {
+					source = this; // expense
+					dest   = null; // unknown
+				}
 			}
-			Transaction tr = new Transaction(source, dest, record.get("Type").toUpperCase(), record.get("Description"), amt, date);
+			Transaction tr = new Transaction(source, dest, record.get("Type").toUpperCase(), record.get("Description"), amt_pos, date);
 			transactions.add(tr);
 		}
 	}
