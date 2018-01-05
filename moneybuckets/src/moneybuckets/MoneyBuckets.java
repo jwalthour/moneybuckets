@@ -56,6 +56,7 @@ public class MoneyBuckets {
 			expenses.addAll(savingsAcct.getExpenses(timeRangeStart, timeRangeEnd));
 			expenseCat.categorizeTransactions(expenses);
 			List<Transaction> income = new LinkedList<>();
+			income.addAll(chaseCard.getIncomes(timeRangeStart, timeRangeEnd));
 			income.addAll(checkingAcct.getIncomes(timeRangeStart, timeRangeEnd));
 			income.addAll(savingsAcct.getIncomes(timeRangeStart, timeRangeEnd));
 			incomeCat.categorizeTransactions(income);
