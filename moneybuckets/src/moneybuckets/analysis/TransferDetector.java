@@ -53,25 +53,28 @@ public class TransferDetector {
 			this.destBucketType    = destBucketType   ;
 		}
 		
-//		public boolean MeetsRule() {
-//			
-////			switch(type) {
-////			case CONTAINS:
-////				return query.toUpperCase().contains(target.toUpperCase());
-////			case EQUALS:
-////				return query.equalsIgnoreCase(target);
-////			case ANY:
-////				return true;
-////			case REGEX:
-////				// TODO
-////				return false;
-////			default:
-////				return false;
-////			}
-//			return false;
-//		}
+		public boolean isTransferSource(Transaction tr) {
+			boolean transTypeMatches = stringMatches(typeCompareType, tr.getType(), descString);
+			boolean descMatches = stringMatches(descCompareType, tr.getDescription(), descString);
+			boolean bucketSourceMatches = tr.getSourceBucket().getClass().getName().equalsIgnoreCase(bucketTypeFoundIn);
+			return transTypeMatches && descMatches && bucketSourceMatches;
+		}
 		
-//		public String getCategory() { return category; }
+		private boolean stringMatches(MatchType type, String query, String target) {
+			switch (typeCompareType) {
+			case ANY:
+				return true;
+			case CONTAINS:
+				return query.toUpperCase().contains(target);
+			case EQUALS:
+				return query.equalsIgnoreCase(target);
+			case REGEX:
+				// TODO
+				return false;
+			default:
+				return false;
+			}
+		}
 	};
 	
 	private List<Rule> rules = new LinkedList<>();
@@ -89,16 +92,24 @@ public class TransferDetector {
 	}
 
 	// Removes transactions from input lists.  Returns the removed transactions.
-	public void detectTransfers(List<Transaction> transactions1, List<Transaction> transactions2) {
-		for (Transaction tr : transactions1) {
+	public List<Transaction> detectTransfers(List<Transaction> transactions1, List<Transaction> transactions2) {
+		List<Transaction> transfers = new LinkedList<>();
+		// Look for one end
+		for (Transaction tr1 : transactions1) {
 			for (Rule r : rules) {
-//				if(r.MeetsRule(tr.getType(), tr.getDescription())) {
-//					tr.setCategory(r.getCategory());
-////					System.out.println(tr.getDescription() + " matched rule " + r.getCategory());
-//					break; // Don't process additional rules
-//				}
+				if(r.isTransferSource(tr1)) {
+					transactions1.remove(tr1);
+					// Look for the other
+					for (Transaction tr2 : transactions2) {
+						
+					}
+					
+					transfers.add(tr1);
+				}
 			}
 		}
+		
+		return transfers;
 	}
 	
 }

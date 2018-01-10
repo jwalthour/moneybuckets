@@ -22,6 +22,7 @@ import javax.swing.WindowConstants;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
+import moneybuckets.analysis.TransferDetector;
 import moneybuckets.buckets.ChaseCreditCard;
 import moneybuckets.buckets.LakeSunapeeAcct;
 import moneybuckets.reports.NetCashflowReport;
@@ -36,6 +37,7 @@ public class MoneyBuckets {
 		LakeSunapeeAcct savingsAcct = new LakeSunapeeAcct("savings");
 		TransactionCategorizer expenseCat = new TransactionCategorizer();
 		TransactionCategorizer incomeCat = new TransactionCategorizer();
+		TransferDetector td = new TransferDetector();
 		try {
 			// Hardcoded ones for now
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -48,6 +50,7 @@ public class MoneyBuckets {
 			expenseCat.loadRules(args[1]);
 			checkingAcct.loadStatement(args[2]);
 			incomeCat.loadRules("..\\configuration\\base_income_rules.csv");
+			td.loadRules("..\\configuration\\transfer_rules.csv");
 			
 			// Process
 			List<Transaction> expenses = new LinkedList<>();
@@ -60,6 +63,7 @@ public class MoneyBuckets {
 			income.addAll(checkingAcct.getIncomes(timeRangeStart, timeRangeEnd));
 			income.addAll(savingsAcct.getIncomes(timeRangeStart, timeRangeEnd));
 			incomeCat.categorizeTransactions(income);
+			List<Transaction> transfers = td.detectTransfers(income, expenses);
 
 			List<Map.Entry<String, Double>> expenseTotals = TransactionCategorizer.GetSortedListOfCategoriesAndTotals(expenses);
 			List<Map.Entry<String, Double>> incomeTotals  = TransactionCategorizer.GetSortedListOfCategoriesAndTotals(income  );
