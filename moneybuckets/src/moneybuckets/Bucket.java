@@ -16,6 +16,10 @@ public class Bucket {
 		this("");
 	}
 	
+	public String bucketType() {
+		return "Bucket";
+	}
+	
 	public Bucket(String informal_name) {
 		this(informal_name, false);
 	}

@@ -8,8 +8,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.csv.CSVFormat;
@@ -17,7 +15,6 @@ import org.apache.commons.csv.CSVRecord;
 
 import moneybuckets.Bucket;
 import moneybuckets.Transaction;
-import moneybuckets.TransactionCategorizer;
 
 public class LakeSunapeeAcct extends Bucket {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
@@ -28,6 +25,11 @@ public class LakeSunapeeAcct extends Bucket {
 
 	public LakeSunapeeAcct(String informal_name) {
 		super("Lake Sunapee " + informal_name, false);
+	}
+
+	@Override
+	public String bucketType() {
+		return "LakeSunapeeAcct";
 	}
 
 	public void loadStatement(String path) throws FileNotFoundException, IOException {

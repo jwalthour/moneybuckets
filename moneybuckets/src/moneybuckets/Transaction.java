@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Transaction {
 	private Bucket sourceBucket, destBucket;
@@ -34,6 +35,16 @@ public class Transaction {
 	@Override
 	public String toString() {
 		return "{ type: \"" + getType() + "\", description: \"" + getDescription() + "\", amount: " + getAmount() + ", category: \"" + getCategory() + "\"}";
+	}
+	
+	public boolean dateAndValueMatch(Transaction other) {
+		if(getAmount() == other.getAmount()) {
+			long diffInMillis = Math.abs(getTimestamp().getTime() - other.getTimestamp().getTime());
+			TimeUnit d = TimeUnit.HOURS;
+			return (d.convert(diffInMillis, TimeUnit.MILLISECONDS) <= 24);
+		} else {
+			return false;
+		}
 	}
 	
 	// Trivial getters and setters

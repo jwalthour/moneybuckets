@@ -54,14 +54,18 @@ public class TransferDetector {
 		}
 		
 		public boolean isTransferSource(Transaction tr) {
-			boolean transTypeMatches = stringMatches(typeCompareType, tr.getType(), descString);
-			boolean descMatches = stringMatches(descCompareType, tr.getDescription(), descString);
-			boolean bucketSourceMatches = tr.getSourceBucket().getClass().getName().equalsIgnoreCase(bucketTypeFoundIn);
-			return transTypeMatches && descMatches && bucketSourceMatches;
+			if(tr.getSourceBucket() == null) {
+				return false;
+			} else {
+				boolean transTypeMatches = stringMatches(typeCompareType, tr.getType(), typeString);
+				boolean descMatches = stringMatches(descCompareType, tr.getDescription(), descString);
+				boolean bucketSourceMatches = tr.getSourceBucket().bucketType().equalsIgnoreCase(bucketTypeFoundIn);
+				return transTypeMatches && descMatches && bucketSourceMatches;
+			}
 		}
 		
 		private boolean stringMatches(MatchType type, String query, String target) {
-			switch (typeCompareType) {
+			switch (type) {
 			case ANY:
 				return true;
 			case CONTAINS:
@@ -75,6 +79,9 @@ public class TransferDetector {
 				return false;
 			}
 		}
+		
+		public String getDestBucketType()   { return destBucketType;   }
+		public String getSourceBucketType() { return sourceBucketType; }
 	};
 	
 	private List<Rule> rules = new LinkedList<>();
@@ -94,19 +101,44 @@ public class TransferDetector {
 	// Removes transactions from input lists.  Returns the removed transactions.
 	public List<Transaction> detectTransfers(List<Transaction> transactions1, List<Transaction> transactions2) {
 		List<Transaction> transfers = new LinkedList<>();
-		// Look for one end
-		for (Transaction tr1 : transactions1) {
+		
+		transfers.addAll(detectTransfersOneWay(transactions1, transactions2));
+		transfers.addAll(detectTransfersOneWay(transactions2, transactions1));
+		
+		return transfers;
+	}
+	// Removes transactions from input lists.  Returns the removed transactions.
+	private List<Transaction> detectTransfersOneWay(List<Transaction> from, List<Transaction> to) {
+		List<Transaction> transfers = new LinkedList<>();
+		// Look for the source end
+		for (Transaction tr1 : from) {
 			for (Rule r : rules) {
 				if(r.isTransferSource(tr1)) {
-					transactions1.remove(tr1);
-					// Look for the other
-					for (Transaction tr2 : transactions2) {
-						
+					// Look for the destination corresponding to that source
+					boolean found = false;
+					for (Transaction tr2 : to) {
+						if(tr2.getDestBucket() != null &&
+								tr2.getDestBucket().bucketType().equalsIgnoreCase(r.getDestBucketType())
+								&& tr1.dateAndValueMatch(tr2)) {
+							found = true;
+							tr1.setDestBucket(tr2.getDestBucket());
+							to.remove(tr2);
+							break; // transactions2
+						}
 					}
 					
-					transfers.add(tr1);
+					if(found) {
+						tr1.setCategory("Transfers");
+						transfers.add(tr1);
+						break; // rules
+					}
 				}
 			}
+		}
+		
+		// Remove from transactions AFTER iterating through
+		for (Transaction tr : transfers) {
+			from.remove(tr);
 		}
 		
 		return transfers;
