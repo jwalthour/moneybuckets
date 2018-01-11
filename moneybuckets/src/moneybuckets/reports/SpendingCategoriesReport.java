@@ -30,9 +30,6 @@ import org.jfree.util.Rotation;
 import moneybuckets.Transaction;
 
 public class SpendingCategoriesReport {
-	private static final String BASE_REPORT_NAME = "report.html";
-	private static final String STATIC_CSS_NAME = "style.css";
-	private static final String CATEGORIES_PIE_CHART_FILE = "cat_pie.png";
 	private static final int CATEGORIES_PIE_CHART_WIDTH_PX  = 800;
 	private static final int CATEGORIES_PIE_CHART_HEIGHT_PX = 400;
 	private static final DecimalFormat CURRENCY_FORMATTER = new DecimalFormat("$0.00");
@@ -46,38 +43,30 @@ public class SpendingCategoriesReport {
 	 * @throws IOException - thrown when file can't be written
 	 */
 	
-	public static void generateHtmlReport(List<Transaction> categorizedTransactions, HashMap<String, Double> catTotals, Path reportSavePath, Date timeRangeStart, Date timeRangeEnd) throws IOException {
-		// Make sure folder exists
-		new File(reportSavePath.toString()).mkdirs();
-		
-		// TODO: Copy in a CSS file
-		
-		// Save off a PNG of the main pie chart
-		FileOutputStream pieChartFile = new FileOutputStream(reportSavePath.resolve(CATEGORIES_PIE_CHART_FILE).toFile());
-		JFreeChart mainPieChart = getPieChartForExpenseCategories(catTotals);
-		ChartUtilities.writeChartAsPNG(pieChartFile, mainPieChart, CATEGORIES_PIE_CHART_WIDTH_PX, CATEGORIES_PIE_CHART_HEIGHT_PX);
-		
+	public static void generateHtmlReport(List<Transaction> categorizedTransactions, HashMap<String, Double> catTotals,  FileOutputStream htmlFile, String headline, String pieChartFilename) throws IOException {
+
 		// Sort transactions
 		categorizedTransactions.sort(new Transaction.ComparatorUncatCatByTotalDescAmount(catTotals));
 		
-		// Open top-level HTML file
-		FileOutputStream htmlFile = new FileOutputStream(reportSavePath.resolve(BASE_REPORT_NAME).toFile());
-		writeHtml(htmlFile, categorizedTransactions, timeRangeStart, timeRangeEnd);
+		writeHtml(htmlFile, categorizedTransactions, headline, pieChartFilename);
+	}
+	
+	public static void generateCatPieChart(FileOutputStream pieChartFile, HashMap<String, Double> catTotals) throws IOException {
+		JFreeChart mainPieChart = getPieChartForExpenseCategories(catTotals);
+		ChartUtilities.writeChartAsPNG(pieChartFile, mainPieChart, CATEGORIES_PIE_CHART_WIDTH_PX, CATEGORIES_PIE_CHART_HEIGHT_PX);
 	}
 	
 
-	private static void writeHtml(FileOutputStream htmlFile, List<Transaction> categorizedTransactions, Date timeRangeStart, Date timeRangeEnd) throws IOException {
+	private static void writeHtml(FileOutputStream htmlFile, List<Transaction> categorizedTransactions, String headline, String pieChartFilename) throws IOException {
 		// I'm aware Java has HTML templating libraries.  I feel they are entirely too heavy for this use case, since they're meant for server-side use.
 		String header = "<html><head><style>body { font-family: Arial; }</style></head><body>";
 		htmlFile.write(header.getBytes());
 		
-		String title = "<h1>Spending Report - " +
-				DATE_FORMAT.format(timeRangeStart) + " to " +
-				DATE_FORMAT.format(timeRangeEnd) + "</h1>";
+		String title = "<h1>" + headline + "</h1>";
 		htmlFile.write(title.getBytes());
 		
 		htmlFile.write("<h2>Summary</h2>".getBytes());
-		String pieChartHolder = "<p><img src=\"" + CATEGORIES_PIE_CHART_FILE + "\" width=" + CATEGORIES_PIE_CHART_WIDTH_PX + " height=" + CATEGORIES_PIE_CHART_HEIGHT_PX +" /></p>";
+		String pieChartHolder = "<p><img src=\"" + pieChartFilename + "\" width=" + CATEGORIES_PIE_CHART_WIDTH_PX + " height=" + CATEGORIES_PIE_CHART_HEIGHT_PX +" /></p>";
 		htmlFile.write(pieChartHolder.getBytes());
 		
 		// Table of transactions

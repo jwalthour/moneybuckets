@@ -1,12 +1,16 @@
 package moneybuckets;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,6 +33,8 @@ import moneybuckets.reports.NetCashflowReport;
 import moneybuckets.reports.SpendingCategoriesReport;
 
 public class MoneyBuckets {
+	private static final String BASE_REPORT_NAME = "report.html";
+	private static final String CC_PIE_CHART_FILE = "cc_pie.png";
 
 	public static void main(String[] args) {
 		// Just for testing right now
@@ -41,7 +47,8 @@ public class MoneyBuckets {
 		try {
 			// Hardcoded ones for now
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-			Date timeRangeStart = dateFormat.parse("2017-11-2");
+			Date timeRangeMonthStart = dateFormat.parse("2017-11-2");
+			Date timeRangeWeekStart = dateFormat.parse("2017-11-25");
 			Date timeRangeEnd   = dateFormat.parse("2017-12-2");
 			
 			// Load from CSV
@@ -54,34 +61,41 @@ public class MoneyBuckets {
 			
 			// Process
 			List<Transaction> expenses = new LinkedList<>();
-			expenses.addAll(chaseCard.getExpenses(timeRangeStart, timeRangeEnd));
-			expenses.addAll(checkingAcct.getExpenses(timeRangeStart, timeRangeEnd));
-			expenses.addAll(savingsAcct.getExpenses(timeRangeStart, timeRangeEnd));
+			expenses.addAll(chaseCard.getExpenses(timeRangeMonthStart, timeRangeEnd));
+			expenses.addAll(checkingAcct.getExpenses(timeRangeMonthStart, timeRangeEnd));
+			expenses.addAll(savingsAcct.getExpenses(timeRangeMonthStart, timeRangeEnd));
+			List<Transaction> ccExpensesLastWeek = chaseCard.getExpenses(timeRangeWeekStart, timeRangeEnd);
 			expenseCat.categorizeTransactions(expenses);
+			expenseCat.categorizeTransactions(ccExpensesLastWeek);
 			List<Transaction> income = new LinkedList<>();
-			income.addAll(chaseCard.getIncomes(timeRangeStart, timeRangeEnd));
-			income.addAll(checkingAcct.getIncomes(timeRangeStart, timeRangeEnd));
-			income.addAll(savingsAcct.getIncomes(timeRangeStart, timeRangeEnd));
+			income.addAll(chaseCard.getIncomes(timeRangeMonthStart, timeRangeEnd));
+			income.addAll(checkingAcct.getIncomes(timeRangeMonthStart, timeRangeEnd));
+			income.addAll(savingsAcct.getIncomes(timeRangeMonthStart, timeRangeEnd));
 			incomeCat.categorizeTransactions(income);
 			List<Transaction> transfers = td.detectTransfers(income, expenses);
 
 			List<Map.Entry<String, Double>> expenseTotals = TransactionCategorizer.GetSortedListOfCategoriesAndTotals(expenses);
+			HashMap<String, Double> ccExpenseTotals = TransactionCategorizer.GetTotalsForCategories(ccExpensesLastWeek);
 			List<Map.Entry<String, Double>> incomeTotals  = TransactionCategorizer.GetSortedListOfCategoriesAndTotals(income  );
+			double totalIncome = 0, totalExpense = 0;
+			for (Map.Entry<String, Double> entry : incomeTotals) {
+				totalIncome += entry.getValue();			
+			}
+			for (Map.Entry<String, Double> entry : expenseTotals) {
+				totalExpense += entry.getValue();			
+			}
 			System.out.println(expenseTotals);
 			System.out.println(incomeTotals);
 			
-			NetCashflowReport.generateHtmlReport(incomeTotals, expenseTotals, Paths.get("..", "generated_reports", "cashflow_report"), timeRangeStart, timeRangeEnd);
-			
-			// Output
-//			System.out.println(totals);
-//			System.out.println(chaseCard.getUncategorizedTransactions());
-//			System.out.println(checkingAcct.getTransactions());
-			
-			// Save
-			SpendingCategoriesReport.generateHtmlReport(expenses,
-					TransactionCategorizer.GetTotalsForCategories(expenses), 
-					Paths.get("..", "generated_reports", "spending_report"),
-					timeRangeStart, timeRangeEnd);
+			// Write report
+			// Make sure folder exists
+			Path reportSavePath = Paths.get("..", "generated_reports");
+			new File(reportSavePath.toString()).mkdirs();
+			FileOutputStream htmlFile = new FileOutputStream(reportSavePath.resolve(BASE_REPORT_NAME).toFile());
+			FileOutputStream ccPieChartFile = new FileOutputStream(reportSavePath.resolve(CC_PIE_CHART_FILE).toFile());
+
+			SpendingCategoriesReport.generateCatPieChart(ccPieChartFile, ccExpenseTotals);
+			SpendingCategoriesReport.generateHtmlReport(ccExpensesLastWeek, ccExpenseTotals, htmlFile, "Credit card spending - past week", CC_PIE_CHART_FILE);
 			
 //			SwingUtilities.invokeLater(() -> {
 //				ChartShower example = new ChartShower("Expenses by category");

@@ -33,51 +33,16 @@ public class NetCashflowReport {
 	private static final DecimalFormat CURRENCY_FORMATTER = new DecimalFormat("$0.00");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
-	public static void generateHtmlReport(List<Entry<String, Double>> incomeTotals, List<Entry<String, Double>> expenseTotals, Path reportSavePath, Date timeRangeStart, Date timeRangeEnd) throws IOException {
-		// Make sure folder exists
-		new File(reportSavePath.toString()).mkdirs();
-		
-		// Save off a PNG of the main pie chart
-		FileOutputStream pieChartFile = new FileOutputStream(reportSavePath.resolve(CATEGORIES_PIE_CHART_FILE).toFile());
-		JFreeChart mainPieChart = getPieChartForExpenseCategories(incomeTotals, expenseTotals);
-		ChartUtilities.writeChartAsPNG(pieChartFile, mainPieChart, CATEGORIES_PIE_CHART_WIDTH_PX, CATEGORIES_PIE_CHART_HEIGHT_PX);
-		
-		double totalIncome = 0, totalExpense = 0;
-		for (Map.Entry<String, Double> entry : incomeTotals) {
-			totalIncome += entry.getValue();			
-		}
-		for (Map.Entry<String, Double> entry : expenseTotals) {
-			totalExpense += entry.getValue();			
-		}
+	public static void generateHtmlReport(List<Entry<String, Double>> incomeTotals, List<Entry<String, Double>> expenseTotals,  FileOutputStream htmlFile, String headline, String barChartFilename) throws IOException {
 
-		System.out.println("Total income: " + totalIncome + " Total expenses: " + totalExpense);
-	}
-	private static JFreeChart getPieChartForExpenseCategories(HashMap<String, Double> incomeTotals,
-			HashMap<String, Double> expenseTotals) {
-		List<Map.Entry<String, Double>> incomeList  = new LinkedList<>(incomeTotals .entrySet());
-		List<Map.Entry<String, Double>> expenseList = new LinkedList<>(expenseTotals.entrySet());
-		
-		Comparator<Map.Entry<String, Double>> sorter = new Comparator<Map.Entry<String, Double>>() {
 
-			@Override
-			public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
-		       if (o1.getValue() > o2.getValue()) {
-		           return 1;
-		       } else if (o1.getValue() < o2.getValue()){
-		           return -1;
-		       } else {
-		           return 0;
-		       }
-			}
-		};
-		
-		incomeList .sort(sorter);
-		expenseList.sort(sorter);
-		
-		return getPieChartForExpenseCategories(incomeList, expenseList);
 	}
-	
-	public static JFreeChart getPieChartForExpenseCategories(List<Map.Entry<String, Double>> incomeTotals, List<Map.Entry<String, Double>> expenseTotals) {
+
+	public static void generateCashflowBarChart(FileOutputStream barChartFile, List<Entry<String, Double>> incomeTotals, List<Entry<String, Double>> expenseTotals) throws IOException {
+		JFreeChart mainBarChart = getBarChartForExpenseCategories(incomeTotals, expenseTotals);
+		ChartUtilities.writeChartAsPNG(barChartFile, mainBarChart, CATEGORIES_PIE_CHART_WIDTH_PX, CATEGORIES_PIE_CHART_HEIGHT_PX);
+	}
+	public static JFreeChart getBarChartForExpenseCategories(List<Map.Entry<String, Double>> incomeTotals, List<Map.Entry<String, Double>> expenseTotals) {
 		DefaultCategoryDataset ds = new DefaultCategoryDataset();
 		
 		for (Map.Entry<String, Double> entry : incomeTotals) {
