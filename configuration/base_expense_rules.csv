@@ -28,3 +28,8 @@ target,type,category
 "LEASES",CONTAINS,"Car payments"
 "VZWRLSS",CONTAINS,"Utilities"
 "Check ",CONTAINS,"Check payments"
+"LODGING",CONTAINS,"Travel"
+"JETBLUE",CONTAINS,"Travel"
+"LLBEAN",CONTAINS,"Shopping"
+"USPS PO",CONTAINS,"Bills"
+"APPLE ONLINE STORE",CONTAINS,"Shopping"
